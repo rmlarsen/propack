@@ -61,7 +61,11 @@ clean:
 	cd .. ; \
 	cd complex8; \
 	$(MAKE) clean; \
-	cd .. )
+	cd .. ; \
+	cd common; \
+	$(MAKE) clean; \
+	cd ..)
+
 
 cleanall:	
 	rm -f  *.o *.il *~
@@ -79,6 +83,9 @@ cleanall:
 	$(MAKE) cleanall; \
 	cd .. ; \
 	cd complex8; \
+	$(MAKE) cleanall; \
+	cd .. ; \
+	cd common; \
 	$(MAKE) cleanall; \
 	cd .. )
 

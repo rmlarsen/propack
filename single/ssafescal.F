@@ -16,14 +16,13 @@ c     %-----------%
 c     %------------%
 c     | Parameters |
 c     %------------%
-      real one, zero
-      parameter(one = 1.0, zero = 0.0)
+      real one
+      parameter(one = 1.0)
 
 c     %-----------------%
 c     | Local variables |
 c     %-----------------%
       integer i,info
-      real sfmin
 
 c     %----------------------%
 c     | External Subroutines |
@@ -36,20 +35,10 @@ c     %--------------------%
       real slamch
       external slamch
 
-c     %-----------------%
-c     | Data statements |
-c     %-----------------%
-      save
-      data sfmin /-1.0/
-      
-      if (sfmin.eq.-1.0) then         
-         sfmin = slamch('s')
-      endif
-
-      if (abs(alpha).ge.sfmin) then
+      if (abs(alpha).ge.slamch('s')) then
          call psscal(n,one/alpha, x, 1)
       else
          call slascl('General',i,i,alpha,one,n,1,x,n,info)
       endif
-      
+
       end

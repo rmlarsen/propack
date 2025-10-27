@@ -15,12 +15,6 @@ c     %-----------%
       integer m,n,k,ldu,ldv
       double precision D(*),E(*),U(ldu,*),V(ldv,*),sigma
 
-c     %------------%
-c     | Parameters |
-c     %------------%
-      double precision one, zero
-      parameter(one = 1.0, zero = 0.0)
-
 c     %-----------------%
 c     | Local variables |
 c     %-----------------%
@@ -30,7 +24,7 @@ c     %-----------------%
 
       logical lsame
       external lsame,dlartg,drot
-      
+
 c-------------------- Here begins executable code ---------------------
 
       if (k.le.1) return
@@ -87,7 +81,7 @@ c     Below 'y' is the "bulge" and 'x' is the element used to eliminate it.
       subroutine dbdqr(ignorelast, jobq, n, D, E, c1, c2, Qt, ldq)
       implicit none
 
-c Compute QR factorization B = Q*R of (n+1) x n lower bidiagonal matrix 
+c Compute QR factorization B = Q*R of (n+1) x n lower bidiagonal matrix
 c with diagonal elements d(1)...d(n) and first subdiagonal elements
 c e(1)...e(n). On return [0 ... 0 c1 c2]' = Q'*[0 ... 0 1]'.
 c If ignorelast.eq..true. then e(n) is assumed to be zero.
@@ -101,7 +95,7 @@ c     %------------%
       logical ignorelast
       integer n,ldq
       double precision D(*),E(*),c1,c2,Qt(ldq,*)
-      
+
 c     %-----------------%
 c     | Local variables |
 c     %-----------------%
@@ -162,8 +156,8 @@ c-------------------- Here begins executable code ---------------------
       subroutine drefinebounds(n,k,theta,bound,tol,eps34)
 c
 c     Refine Lanczos error bounds using the gap theorem.
-c     
-c     Input arguments: 
+c
+c     Input arguments:
 c              n:     smallest dimension of original matrix
 c              k:     number of Ritz values to refine
 c              theta: array of Ritz values
@@ -202,16 +196,16 @@ c-------------------- Here begins executable code ---------------------
                   endif
                endif
             endif
-         enddo         
+         enddo
       enddo
       do i=1,k
          if (i.lt.k .or. k.eq.n) then
 c
 c     We cannot compute a reliable value for the gap of the last
-c     Ritz value unless we know it is an approximation to the 
-c     smallest singular value (k.eq.n). In this case we can take the 
-c     distance to the next bigger one as the gap, which can really 
-c     save us from getting stuck on matrices with a single isolated tiny 
+c     Ritz value unless we know it is an approximation to the
+c     smallest singular value (k.eq.n). In this case we can take the
+c     distance to the next bigger one as the gap, which can really
+c     save us from getting stuck on matrices with a single isolated tiny
 c     singular value.
 c
             if (i.eq.1) then
@@ -219,8 +213,8 @@ c
             else if (i.eq.n) then
                gap = abs(theta(i-1)-theta(i))-max(bound(i-1),bound(i))
             else
-               gap = abs(theta(i)-theta(i+1))-max(bound(i),bound(i+1)) 
-               gap = min(gap,abs(theta(i-1) - theta(i)) - 
+               gap = abs(theta(i)-theta(i+1))-max(bound(i),bound(i+1))
+               gap = min(gap,abs(theta(i-1) - theta(i)) -
      c              max(bound(i-1),bound(i)))
             endif
             if (gap.gt.bound(i)) then

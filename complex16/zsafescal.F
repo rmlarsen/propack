@@ -17,14 +17,13 @@ c     %-----------%
 c     %------------%
 c     | Parameters |
 c     %------------%
-      double precision one, zero
-      parameter(one = 1.0, zero = 0.0)
+      double precision one
+      parameter(one = 1.0)
 
 c     %-----------------%
 c     | Local variables |
 c     %-----------------%
       integer i,info
-      double precision sfmin
 
 c     %----------------------%
 c     | External Subroutines |
@@ -37,20 +36,10 @@ c     %--------------------%
       double precision dlamch
       external dlamch
 
-c     %-----------------%
-c     | Data statements |
-c     %-----------------%
-      save
-      data sfmin /-1d0/
-      
-      if (sfmin.eq.-1d0) then         
-         sfmin = dlamch('s')
-      endif
-
-      if (abs(alpha).ge.sfmin) then
+      if (abs(alpha).ge.dlamch('s')) then
          call pzdscal(n,one/alpha, x, 1)
       else
          call zlascl('General',i,i,alpha,one,n,1,x,n,info)
       endif
-      
+
       end

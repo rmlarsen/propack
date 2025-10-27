@@ -17,8 +17,8 @@ LINKFLAGS = -g  -Wall $(OPT)
 
 # Which compilers and linker to use
 CC = gcc
-F77 = g77 
-LINKER = g77 
+F77 = gfortran 
+LINKER = gfortran 
 MAKELIB = ar rc
 
 # Linker paths and flags

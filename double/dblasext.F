@@ -7,11 +7,11 @@ c
       implicit none
       integer n, incx
       double precision x(*)
-      
+
       integer i
       double precision sum
 
-      if ((n.gt.0).and.(incx.ne.0)) then    
+      if ((n.gt.0).and.(incx.ne.0)) then
          sum = 0d0
          if (incx.eq.1) then
 c$OMP PARALLEL DO  reduction(+:sum) schedule(static)
@@ -27,22 +27,22 @@ c$OMP PARALLEL DO firstprivate(incx) reduction(+:sum) schedule(static)
          pdnrm2 = sqrt(sum)
       else
          pdnrm2 = 0d0
-      endif   
+      endif
       return
       end
 c
 c****************************************************************************
-c 
-      
+c
+
 
       subroutine pdscal(n, alpha, x , incx)
       implicit none
       integer n, incx
       double precision alpha,x(*)
-      
+
       integer i
 
-      if ((n.gt.0).and.(incx.ne.0)) then         
+      if ((n.gt.0).and.(incx.ne.0)) then
          if (incx.eq.1) then
 c$OMP PARALLEL DO firstprivate(alpha) schedule(static)
             do i=1,n
@@ -57,20 +57,20 @@ c$OMP PARALLEL DO firstprivate(alpha, incx) schedule(static)
       endif
       return
       end
-      
+
 c
 c****************************************************************************
-c 
-         
+c
+
 
       subroutine pdcopy(n, x , incx, y, incy)
       implicit none
       integer n, incx, incy
       double precision x(*),y(*)
-      
+
       integer i
 
-      if ((n.gt.0).and.(incx.ne.0).and.(incy.ne.0)) then         
+      if ((n.gt.0).and.(incx.ne.0).and.(incy.ne.0)) then
          if (incx.eq.1 .and. incy.eq.1) then
 c$OMP PARALLEL DO  schedule(static)
             do i=1,n
@@ -88,15 +88,15 @@ c$OMP PARALLEL DO firstprivate(incx, incy) schedule(static)
 
 c
 c****************************************************************************
-c 
+c
       subroutine pdaxpy(n, alpha, x , incx, y, incy)
       implicit none
       integer n, incx, incy
       double precision alpha,x(*),y(*)
-      
+
       integer i
 
-      if ((n.gt.0).and.(incx.ne.0).and.(incy.ne.0)) then         
+      if ((n.gt.0).and.(incx.ne.0).and.(incy.ne.0)) then
          if (incx.eq.1 .and. incy.eq.1) then
 c$OMP PARALLEL DO firstprivate(alpha)  schedule(static)
            do i=1,n
@@ -105,28 +105,28 @@ c$OMP PARALLEL DO firstprivate(alpha)  schedule(static)
          else
 c$OMP PARALLEL DO firstprivate(alpha,incx,incy) schedule(static)
             do i=1,n
-               y(1+(i-1)*incy) = alpha*x(1+(i-1)*incx) + 
+               y(1+(i-1)*incy) = alpha*x(1+(i-1)*incx) +
      c              y(1+(i-1)*incy)
             enddo
          endif
       endif
       return
       end
-      
+
 c
 c****************************************************************************
-c 
-     
-         
+c
+
+
       double precision function pddot(n, x , incx, y, incy)
       implicit none
       integer n, incx, incy
       double precision x(*),y(*)
-      
+
       integer i
       double precision sum
 
-      if ((n.gt.0).and.(incx.ne.0).and.(incy.ne.0)) then    
+      if ((n.gt.0).and.(incx.ne.0).and.(incy.ne.0)) then
          if (incx.eq.1 .and. incy.eq.1) then
             sum = 0d0
 c$OMP PARALLEL DO reduction(+:sum) schedule(static)
@@ -135,8 +135,8 @@ c$OMP PARALLEL DO reduction(+:sum) schedule(static)
             enddo
          else
             sum = 0d0
-c$OMP PARALLEL DO firstprivate(incx, incy) reduction(+:sum) 
-c$OMP& schedule(static) 
+c$OMP PARALLEL DO firstprivate(incx, incy) reduction(+:sum)
+c$OMP& schedule(static)
             do i=1,n
                sum = sum + x(1+(i-1)*incx) * y(1+(i-1)*incy)
             enddo
@@ -144,10 +144,9 @@ c$OMP& schedule(static)
          pddot = sum
       else
          pddot = 0d0
-      endif   
+      endif
       return
       end
-
 
 #else
 
@@ -180,35 +179,35 @@ c$OMP& schedule(static)
       implicit none
       integer n, incx, incy
       double precision alpha,x(*),y(*)
-     
+
       call daxpy(n, alpha, x , incx, y, incy)
       end
 
-      
+
       double precision function pddot(n, x , incx, y, incy)
       implicit none
       integer n, incx, incy
       double precision x(*),y(*),ddot
       external ddot
-      
+
       pddot = ddot(n, x , incx, y, incy)
       end
 #endif
 
 c
 c****************************************************************************
-c 
-         
+c
+
       subroutine pdzero(n, x , incx)
       implicit none
       integer n, incx
       double precision x(*)
-      
+
       integer i
 
-      if ((n.gt.0).and.(incx.ne.0)) then         
+      if ((n.gt.0).and.(incx.ne.0)) then
          if (incx.eq.1) then
-c$OMP PARALLEL DO 
+c$OMP PARALLEL DO
             do i=1,n
                x(i) = 0d0
             enddo
@@ -223,38 +222,15 @@ c$OMP PARALLEL DO firstprivate(incx) schedule(static)
       end
 
 
-      subroutine pizero(n, x , incx)
-      implicit none
-      integer n, incx
-      integer x(*)
-      
-      integer i
-
-      if ((n.gt.0).and.(incx.ne.0)) then         
-         if (incx.eq.1) then
-c$OMP PARALLEL DO  schedule(static)
-            do i=1,n
-               x(i) = 0
-            enddo
-         else
-c$OMP PARALLEL DO firstprivate(incx) schedule(static)
-            do i=1,n
-               x(1+(i-1)*incx) = 0
-            enddo
-         endif
-      endif
-      return
-      end
-
 
       subroutine pdset(n, alpha, x , incx)
       implicit none
       integer n, incx
       double precision alpha,x(*)
-      
+
       integer i
 
-      if ((n.gt.0).and.(incx.ne.0)) then         
+      if ((n.gt.0).and.(incx.ne.0)) then
          if (incx.eq.1) then
 c$OMP PARALLEL DO firstprivate(alpha) schedule(static)
             do i=1,n
@@ -270,12 +246,10 @@ c$OMP PARALLEL DO firstprivate(alpha, incx) schedule(static)
       return
       end
 
-
-  
       subroutine pdaxpby(n,alpha,x,incx,beta,y,incy)
 c
 c     Y = alpha*X + beta*Y
-c     
+c
 
       implicit none
       double precision one,zero
@@ -296,9 +270,9 @@ c$OMP PARALLEL DO firstprivate(incy) schedule(static)
                y(1+(i-1)*incy) = zero
             enddo
          endif
-         
+
       else if (alpha.eq.zero .and. beta.ne.zero) then
-         
+
          call pdscal(n,beta,y,incy)
 
       else if (alpha.ne.zero .and. beta.eq.zero) then
@@ -312,8 +286,8 @@ c$OMP PARALLEL DO firstprivate(alpha) schedule(static)
                   y(i) = alpha*x(i)
                enddo
             else
-c$OMP PARALLEL DO firstprivate(incx, incy, alpha) 
-c$OMP& schedule(static) 
+c$OMP PARALLEL DO firstprivate(incx, incy, alpha)
+c$OMP& schedule(static)
                do i=1,n
                   y(1+(i-1)*incy) = alpha*x(1+(i-1)*incx)
                enddo
@@ -327,16 +301,16 @@ c DAXPY
             call pdaxpy(n,alpha,x,incx,y,incy)
          else
             if (incx.eq.1 .and. incy.eq.1) then
-c$OMP PARALLEL DO firstprivate(alpha,beta) 
-c$OMP& schedule(static) 
+c$OMP PARALLEL DO firstprivate(alpha,beta)
+c$OMP& schedule(static)
                do i=1,n
                   y(i) = alpha*x(i) + beta*y(i)
                enddo
             else
-c$OMP PARALLEL DO firstprivate(alpha,beta,incx,incy)  
-c$OMP& schedule(static) 
+c$OMP PARALLEL DO firstprivate(alpha,beta,incx,incy)
+c$OMP& schedule(static)
                do i=1,n
-                  y(1+(i-1)*incy) = alpha*x(1+(i-1)*incx) + 
+                  y(1+(i-1)*incy) = alpha*x(1+(i-1)*incx) +
      c                 beta*y(1+(i-1)*incy)
                enddo
             endif
@@ -350,7 +324,7 @@ c$OMP& schedule(static)
       subroutine pdaxty(n,alpha,x,incx,y,incy)
 c
 c     Y = alpha*X*Y
-c     
+c
 
       implicit none
       double precision one,zero
@@ -371,7 +345,7 @@ c$OMP PARALLEL DO firstprivate(incy) schedule(static)
                y(1+(i-1)*incy) = zero
             enddo
          endif
-         
+
       else if (alpha.ne.zero) then
 
          if (alpha.eq.one) then
@@ -394,8 +368,8 @@ c$OMP PARALLEL DO firstprivate(alpha) schedule(static)
                   y(i) = alpha*x(i)*y(i)
                enddo
             else
-c$OMP PARALLEL DO firstprivate(alpha,incx,incy) 
-c$OMP& schedule(static) 
+c$OMP PARALLEL DO firstprivate(alpha,incx,incy)
+c$OMP& schedule(static)
                do i=1,n
                   y(1+(i-1)*incy) = alpha*x(1+(i-1)*incx)*
      c                 y(1+(i-1)*incy)
@@ -408,37 +382,14 @@ c$OMP& schedule(static)
 
 
 
-
-      subroutine szero(n, x , incx)
-      implicit none
-      integer n, incx
-      real x(*),zero
-      parameter (zero = 0)          
-      integer i
-
-      if ((n.gt.0).and.(incx.ne.0)) then         
-         if (incx.eq.1) then
-            do i=1,n
-               x(i) = zero
-            enddo
-         else
-            do i=1,n
-               x(1+(i-1)*incx) = zero
-            enddo
-         endif
-      endif
-      return
-      end
-
-                 
       subroutine dzero(n, x , incx)
       implicit none
       integer n, incx
       double precision x(*),zero
-      parameter (zero = 0.0)          
+      parameter (zero = 0.0)
       integer i
 
-      if ((n.gt.0).and.(incx.ne.0)) then         
+      if ((n.gt.0).and.(incx.ne.0)) then
          if (incx.eq.1) then
             do i=1,n
                x(i) = zero
@@ -451,27 +402,3 @@ c$OMP& schedule(static)
       endif
       return
       end
-
-
-      subroutine izero(n, x , incx)
-      implicit none
-      integer n, incx
-      integer x(*),zero
-      parameter (zero = 0)          
-      integer i
-
-      if ((n.gt.0).and.(incx.ne.0)) then         
-         if (incx.eq.1) then
-            do i=1,n
-               x(i) = zero
-            enddo
-         else
-            do i=1,n
-               x(1+(i-1)*incx) = zero
-            enddo
-         endif
-      endif
-      return
-      end
-
-         

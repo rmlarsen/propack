@@ -120,11 +120,9 @@ c
 c
 c     Print singular values and computed error bounds.
 c
-      write(*,*)
-      write(*,*) '  i          sigma(i)              bnd(i)'
+      write (*,*) 'Writing singular values to ',sigmafilename
       open(10,file=sigmafilename,status='unknown')
       do i=1,neig
-         write(*,'(1I5,1p,1e25.15,1p,1e12.3)') i,Sigma(i),bnd(i)
          write(10,'(1I5,1p,1e25.15,1p,1e12.3)') i,Sigma(i),bnd(i)
       enddo 
       close(10)
