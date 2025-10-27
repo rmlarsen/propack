@@ -1,5 +1,5 @@
 ```rich-text-format
-PROPACK Version 2.1,                              Stanford, April 2005
+PROPACK Version 2.2,                    Mountain View, October 2025
 
 OVERVIEW
   This directory contains a Fortran version of the PROPACK software,
@@ -175,11 +175,9 @@ CONTACT INFORMATION
 directed to:
 
 Rasmus Munk Larsen      
-W.W. Hansen Experimental Physics Laboratory (HEPL), Annex A210
-Stanford University,  Stanford, CA 94305-4085
-E-mail: rmunk@quake.stanford.edu 
+E-mail: rmunk@gmail.com 
 
-(C) Rasmus Munk Larsen, Stanford University, March 2004.
+(C) Rasmus Munk Larsen,    Mountain View, October 2025.
 
 
 ```
