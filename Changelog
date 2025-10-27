@@ -1,3 +1,15 @@
+Version 2.2, October 2025:
+
+Changes since version 2.2:
+
+- Refactored make files to reduce duplication among different precisions.
+- Changed default compiler on Linux from "g77" to "gfortran".
+- Removed LAPACK source files, and depend on linking a pre-installed 
+  version of LAPACK.
+- Improve stability of the implicitly restarted version of the algorithm
+  by using deflation in the QR steps.
+- Various bug fixes and stability improvements. 
+
 Version 2.1, April 2005:
 
 Changes since version 2.0:
@@ -156,7 +168,7 @@ Changes since version 1.0:
 
 - Fixed two bugs where dgetu0 and dreorth were being called with the
   wrong number of parameters. Thanks to Jerzy Czaplicki, Institut de 
-  Pharmacologie et de Biologie Structurale CNRS, Université Paul
+  Pharmacologie et de Biologie Structurale CNRS, UniversitÃ© Paul
   Sabatier, Toulouse for reporting this.
 
 - Added experimental support for computing the smallest singular
