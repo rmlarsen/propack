@@ -6,9 +6,10 @@ include(GNUInstallDirs)
 # ---------------------------------------------------------------------------
 # Options
 # ---------------------------------------------------------------------------
-option(PROPACK_BUILD_EXAMPLES "Build example programs" ON)
-option(PROPACK_BUILD_TESTING  "Build CTest targets for examples" ON)
-option(PROPACK_USE_OPENMP     "Enable OpenMP parallelization" OFF)
+option(PROPACK_BUILD_EXAMPLES    "Build example programs" ON)
+option(PROPACK_BUILD_BENCHMARKS  "Build benchmark programs" OFF)
+option(PROPACK_BUILD_TESTING     "Build CTest targets for examples" ON)
+option(PROPACK_USE_OPENMP        "Enable OpenMP parallelization" OFF)
 
 option(PROPACK_BUILD_SINGLE    "Build single-precision (s) library"         ON)
 option(PROPACK_BUILD_DOUBLE    "Build double-precision (d) library"         ON)
@@ -225,6 +226,33 @@ function(_add_propack_variant PREFIX TYPE_DIR REAL_DIR REAL_PREFIX)
       set_tests_properties(${PREFIX}propack_verify_irl PROPERTIES
         FIXTURES_REQUIRED ${PREFIX}propack_example_irl_fixture
       )
+    endif()
+
+    # --- benchmark program ---
+    if(PROPACK_BUILD_BENCHMARKS)
+      set(_bench_tgt ${PREFIX}propack_benchmark)
+      add_executable(${_bench_tgt}
+        ${_ex_dir}/benchmark.F
+        ${_ex_dir}/matvec.F
+      )
+      target_include_directories(${_bench_tgt} PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}/${_ex_dir}
+        ${CMAKE_CURRENT_SOURCE_DIR}/${TYPE_DIR}
+        ${CMAKE_CURRENT_SOURCE_DIR}/common
+      )
+      target_link_libraries(${_bench_tgt} PRIVATE ${_lib_name})
+
+      if(PROPACK_BUILD_TESTING)
+        add_test(
+          NAME ${PREFIX}propack_benchmark_run
+          COMMAND ${_bench_tgt}
+          WORKING_DIRECTORY ${_runtime_dir}
+        )
+        set_tests_properties(${PREFIX}propack_benchmark_run PROPERTIES
+          LABELS "benchmark"
+          TIMEOUT 600
+        )
+      endif()
     endif()
   endif()
 endfunction()
