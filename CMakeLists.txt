@@ -259,6 +259,21 @@ function(_add_propack_variant PREFIX TYPE_DIR REAL_DIR REAL_PREFIX)
           TIMEOUT 600
         )
       endif()
+
+      # --- generated-matrix scaling benchmark ---
+      set(_benchgen_tgt ${PREFIX}propack_benchmark_gen)
+      add_executable(${_benchgen_tgt} ${_ex_dir}/benchmark_gen.F)
+      target_include_directories(${_benchgen_tgt} PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}/${TYPE_DIR}
+        ${CMAKE_CURRENT_SOURCE_DIR}/common
+      )
+      target_link_libraries(${_benchgen_tgt} PRIVATE ${_lib_name})
+      if(PROPACK_BUILD_TESTING)
+        add_test(NAME ${PREFIX}propack_benchmark_gen_run
+          COMMAND ${_benchgen_tgt})
+        set_tests_properties(${PREFIX}propack_benchmark_gen_run PROPERTIES
+          LABELS "benchmark" TIMEOUT 1800)
+      endif()
     endif()
   endif()
 endfunction()
