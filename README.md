@@ -154,6 +154,43 @@ SUBROUTINE APROD(TRANSA, M, N, X, Y, DPARM, IPARM)
 See the source files `<precision>/<X>lansvd.F` and `<precision>/<X>lansvd_irl.F`
 for full parameter documentation.
 
+## C++ API
+
+When `PROPACK_BUILD_CXX_API=ON` (the default), a header-only C++ interface is
+installed as `propack.hpp`. It provides `propack::lansvd<T>()` and
+`propack::lansvd_irl<T>()` for `T` = `double`, `float`, `std::complex<double>`,
+or `std::complex<float>`. Workspace is managed automatically.
+
+```cpp
+#include <propack.hpp>
+#include <iostream>
+
+int main() {
+    const int m = 100, n = 80, k = 5, kmax = 20;
+    // Diagonal matrix with entries 1, 2, ..., min(m,n)
+    auto result = propack::lansvd<double>(m, n, k, kmax,
+        [](char trans, int m, int n, const double* x, double* y) {
+            int len = (trans == 'N') ? m : n;
+            int mn  = (m < n) ? m : n;
+            for (int i = 0; i < len; ++i) y[i] = 0.0;
+            for (int i = 0; i < mn; ++i)
+                y[i] = (i + 1.0) * x[i];  // diag(1,2,...,min(m,n))
+        });
+
+    std::cout << "info = " << result.info << "\n";
+    for (int i = 0; i < k; ++i)
+        std::cout << "sigma[" << i << "] = " << result.sigma[i]
+                  << " +/- " << result.bnd[i] << "\n";
+}
+```
+
+Link against the appropriate PROPACK library and a Fortran runtime:
+
+```cmake
+find_package(PROPACK REQUIRED)
+target_link_libraries(myapp PRIVATE PROPACK::dpropack)
+```
+
 ## Contact
 
 Questions and comments about PROPACK are welcome and should be directed to:

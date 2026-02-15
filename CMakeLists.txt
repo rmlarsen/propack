@@ -1,6 +1,9 @@
 cmake_minimum_required(VERSION 3.14)
 project(PROPACK VERSION 2.2 LANGUAGES Fortran)
 
+# C++ API wrappers need a C++ compiler for header validation / tests.
+# The Fortran wrappers themselves are pure Fortran (iso_c_binding).
+
 include(GNUInstallDirs)
 
 # ---------------------------------------------------------------------------
@@ -21,6 +24,7 @@ option(PROPACK_BUILD_SINGLE    "Build single-precision (s) library"         ON)
 option(PROPACK_BUILD_DOUBLE    "Build double-precision (d) library"         ON)
 option(PROPACK_BUILD_COMPLEX8  "Build complex single-precision (c) library" ON)
 option(PROPACK_BUILD_COMPLEX16 "Build complex double-precision (z) library" ON)
+option(PROPACK_BUILD_CXX_API  "Build C/C++ API wrappers (iso_c_binding)"   ON)
 
 # ---------------------------------------------------------------------------
 # Dependencies
@@ -109,6 +113,10 @@ function(_add_propack_variant PREFIX TYPE_DIR REAL_DIR REAL_PREFIX)
     ${TYPE_DIR}/${PREFIX}ritzvec.F
   )
 
+  if(PROPACK_BUILD_CXX_API)
+    list(APPEND _own_sources ${TYPE_DIR}/${PREFIX}propack_c.f90)
+  endif()
+
   # --- real-valued helpers needed by every variant ---
   # For real variants (double, single) these partially overlap with
   # _own_sources; only add ortho_rec and bsvd which are not in the list
@@ -136,6 +144,12 @@ function(_add_propack_variant PREFIX TYPE_DIR REAL_DIR REAL_PREFIX)
     ${CMAKE_CURRENT_SOURCE_DIR}/${TYPE_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}/common
   )
+  if(PROPACK_BUILD_CXX_API)
+    target_include_directories(${_lib_name} PUBLIC
+      $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+      $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
+    )
+  endif()
   target_link_libraries(${_lib_name} PUBLIC propack_common LAPACK::LAPACK)
 
   install(TARGETS ${_lib_name} EXPORT PROPACKTargets
@@ -321,6 +335,35 @@ if(PROPACK_BUILD_COMPLEX16)
 endif()
 if(PROPACK_BUILD_COMPLEX8)
   _add_propack_variant(c       complex8    single    s)
+endif()
+
+# ---------------------------------------------------------------------------
+# C++ API unit tests (GTest)
+# ---------------------------------------------------------------------------
+if(PROPACK_BUILD_CXX_API AND PROPACK_BUILD_TESTING)
+  enable_language(CXX)
+  set(CMAKE_CXX_STANDARD 17)
+  set(CMAKE_CXX_STANDARD_REQUIRED ON)
+  find_package(GTest QUIET)
+  if(GTest_FOUND)
+    add_executable(propack_cxx_test tests/test_propack_cxx.cpp)
+    target_link_libraries(propack_cxx_test PRIVATE
+      GTest::gtest_main
+      dpropack spropack zpropack cpropack
+    )
+    include(GoogleTest)
+    gtest_discover_tests(propack_cxx_test)
+  else()
+    message(STATUS "GTest not found — skipping C++ API tests")
+  endif()
+endif()
+
+# ---------------------------------------------------------------------------
+# Install C++ header
+# ---------------------------------------------------------------------------
+if(PROPACK_BUILD_CXX_API)
+  install(FILES include/propack.hpp
+    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 endif()
 
 # ---------------------------------------------------------------------------
