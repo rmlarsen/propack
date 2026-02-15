@@ -359,6 +359,30 @@ if(PROPACK_BUILD_CXX_API AND PROPACK_BUILD_TESTING)
 endif()
 
 # ---------------------------------------------------------------------------
+# C++ API benchmarks (Google Benchmark)
+# ---------------------------------------------------------------------------
+if(PROPACK_BUILD_CXX_API AND PROPACK_BUILD_BENCHMARKS)
+  enable_language(CXX)
+  set(CMAKE_CXX_STANDARD 17)
+  set(CMAKE_CXX_STANDARD_REQUIRED ON)
+  find_package(benchmark QUIET)
+  if(benchmark_FOUND)
+    add_executable(propack_cxx_benchmark tests/bench_propack_cxx.cpp)
+    target_link_libraries(propack_cxx_benchmark PRIVATE
+      benchmark::benchmark benchmark::benchmark_main
+      dpropack spropack zpropack cpropack)
+    if(PROPACK_BUILD_TESTING)
+      add_test(NAME propack_cxx_benchmark_run
+        COMMAND propack_cxx_benchmark --benchmark_min_time=0.1s)
+      set_tests_properties(propack_cxx_benchmark_run PROPERTIES
+        LABELS "benchmark" TIMEOUT 600)
+    endif()
+  else()
+    message(STATUS "Google Benchmark not found — skipping C++ API benchmarks")
+  endif()
+endif()
+
+# ---------------------------------------------------------------------------
 # Install C++ header
 # ---------------------------------------------------------------------------
 if(PROPACK_BUILD_CXX_API)
