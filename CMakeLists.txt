@@ -8,6 +8,12 @@ include(GNUInstallDirs)
 # ---------------------------------------------------------------------------
 option(PROPACK_BUILD_EXAMPLES    "Build example programs" ON)
 option(PROPACK_BUILD_BENCHMARKS  "Build benchmark programs" OFF)
+if(PROPACK_BUILD_BENCHMARKS AND CMAKE_BUILD_TYPE AND
+   NOT CMAKE_BUILD_TYPE STREQUAL "Release" AND
+   NOT CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
+  message(WARNING
+    "Benchmarks are most meaningful in Release mode (current: ${CMAKE_BUILD_TYPE}).")
+endif()
 option(PROPACK_BUILD_TESTING     "Build CTest targets for examples" ON)
 option(PROPACK_USE_OPENMP        "Enable OpenMP parallelization" OFF)
 
