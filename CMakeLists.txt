@@ -25,7 +25,18 @@ option(PROPACK_BUILD_COMPLEX16 "Build complex double-precision (z) library" ON)
 # ---------------------------------------------------------------------------
 # Dependencies
 # ---------------------------------------------------------------------------
-find_package(LAPACK REQUIRED)   # also finds BLAS via transitive dependency
+# Prefer OpenBLAS when available; fall back to any BLAS/LAPACK otherwise.
+# Users can override with -DBLA_VENDOR=<vendor> on the cmake command line.
+if(NOT BLA_VENDOR)
+  set(BLA_VENDOR OpenBLAS)
+  find_package(LAPACK QUIET)
+  if(NOT LAPACK_FOUND)
+    unset(BLA_VENDOR)
+    find_package(LAPACK REQUIRED)
+  endif()
+else()
+  find_package(LAPACK REQUIRED)
+endif()
 
 if(PROPACK_USE_OPENMP)
   find_package(OpenMP REQUIRED COMPONENTS Fortran)

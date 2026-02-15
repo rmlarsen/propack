@@ -30,10 +30,10 @@ c     WORK is a workspace array of length at least
 c
 c       max e_i-s_i+1, i=1...l.
 c
-c     WORK is only used if IFLAG==1.
+c     WORK is only used if IFLAG==0.
 c
-c     If IFLAG==0 then iterated modified Gram-Schmidt is used.
-c     If IFLAG==1 then iterated classical Gram-Schmidt is used.
+c     If IFLAG==0 then iterated classical Gram-Schmidt is used (default).
+c     If IFLAG==1 then iterated modified Gram-Schmidt is used.
 c
 
 c     References:
@@ -88,9 +88,9 @@ c     %--------------------%
       do itry=1,NTRY
          normvnew_0 = normvnew
          if ( iflag.eq.1 ) then
-            call scgs(n,k,V,ldv,vnew,index,work)
-         else
             call smgs(n,k,V,ldv,vnew,index)
+         else
+            call scgs(n,k,V,ldv,vnew,index,work)
          endif
          normvnew = psnrm2(n,vnew,1)
          if (normvnew.gt.alpha*normvnew_0) goto 9999
