@@ -46,7 +46,7 @@ c               value of WHICH)  singular values of A.
 c               On entry the first column of U contains the starting vector
 c               for the Lanczos bidiagonalization. A random starting vector
 c               is used if U is zero.
-c     LDU: INTEGER. Leading dimension of the array U. LDV >= M.
+c     LDU: INTEGER. Leading dimension of the array U. LDU >= M.
 c     SIGMA(K): DOUBLE PRECISION array. On return Sigma contains approximation
 c               to the K largest or smallest (depending on the
 c               value of WHICH) singular values of A.
@@ -64,10 +64,10 @@ c            BND(K) <= MAX(TOLIN*SIGMA(K), 16*EPS*||A||)
 c     WORK(LWORK): DOUBLE PRECISION array. Workspace of dimension LWORK.
 c     LWORK: INTEGER. Dimension of WORK.
 c            If JOBU.EQ.'N' and JOBV.EQ.'N' then  LWORK should be at least
-c            M + N + 10*KMAX + 2*KMAX**2 + 5 + MAX(M,N,4*KMAX+4).
+c            M + N + 10*DIM + 2*DIM**2 + 5 + MAX(M,N,4*DIM+4).
 c            If JOBU.EQ.'Y' or JOBV.EQ.'Y' then LWORK should be at least
-c            M + N + 10*KMAX + 5*KMAX**2 + 4 +
-c            MAX(3*KMAX**2+4*KMAX+4, NB*MAX(M,N)), where NB>0 is a block
+c            M + N + 10*DIM + 5*DIM**2 + 4 +
+c            MAX(3*DIM**2+4*DIM+4, NB*MAX(M,N)), where NB>0 is a block
 c            size, which determines how large a fraction of the work in
 c            setting up the singular vectors is done using fast BLAS-3
 c            operation.
@@ -80,8 +80,8 @@ c             M + N + NB*MAX(M,N), where NB>0 is a block size, which determines
 c             how large a fraction of the work in setting up the singular
 c             vectors is done using fast BLAS-3 operations.
 c     IWORK: INTEGER array. Integer workspace of dimension LIWORK.
-c     LIWORK: INTEGER. Dimension of IWORK. Should be at least 8*KMAX if
-c             JOBU.EQ.'Y' or JOBV.EQ.'Y' and at least 2*KMAX+1 otherwise.
+c     LIWORK: INTEGER. Dimension of IWORK. Should be at least 8*DIM if
+c             JOBU.EQ.'Y' or JOBV.EQ.'Y' and at least 2*DIM+1 otherwise.
 c     DOPTION: DOUBLE PRECISION array. Parameters for LANBPRO.
 c        doption(1) = delta. Level of orthogonality to maintain among
 c          Lanczos vectors.
@@ -93,15 +93,16 @@ c        doption(4) = min relgap. Smallest relgap allowed between any shift
 c                     the smallest requested Ritz value.
 c
 c     IOPTION: INTEGER array. Parameters for LANBPRO.
-c        ioption(1) = CGS.  If CGS.EQ.1 then reorthogonalization is done
-c          using iterated classical Gram-Schmidt. IF CGS.EQ.0 then
-c          reorthogonalization is done using iterated modified Gram-Schmidt.
+c        ioption(1) = MGS.  If MGS.EQ.1 then reorthogonalization is done
+c          using iterated modified Gram-Schmidt. If MGS.EQ.0 (default)
+c          then reorthogonalization is done using iterated classical
+c          Gram-Schmidt.
 c        ioption(2) = ELR. If ELR.EQ.1 then extended local orthogonality is
 c          enforced among u_{k}, u_{k+1} and v_{k} and v_{k+1} respectively.
 c
 c     INFO: INTEGER.
 c         INFO = 0: The NWANTED largest or smallest (depending on the value of
-c                   WHICH) singular triplets were computed succesfully.
+c                   WHICH) singular triplets were computed successfully.
 c         INFO = J>0, J<NWANTED: An invariant subspace of dimension J was found.
 c         INFO = J<0, |J|<NWANTED: Only J singular triplets converge before
 c                    exceeding MAXITER iterations.
@@ -300,7 +301,7 @@ c     |   bidiagonalization (dim-k) steps to                                |
 c     |                                                                     |
 c     |      A V_{k}^{+} = U_{k+1}^{+} B_{k}^{+}                            |
 c     | corresponding to starting vector                                    |
-c     |      u_1^{+} = \prod_{i=1}^{p} (A A^T - mu_i^2) u_1                 |
+c     |      u_1^{+} = \prod_{i=1}^{p} (A A^H - mu_i^2) u_1                 |
 c     |                                                                     |
 c     | We use exact shifts mu_i for which the relative gap between mu_i    |
 c     | and the lower bound on the k'th Ritzvalue is larger than doption(4) |

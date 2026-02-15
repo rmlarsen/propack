@@ -19,7 +19,7 @@ c           the generated Krylov subspace.
 c     APROD: Subroutine defining the linear operator A.
 c            APROD should be of the form:
 c
-c           SUBROUTINE DAPROD(TRANSA,M,N,X,Y,DPARM,IPARM)
+c           SUBROUTINE APROD(TRANSA,M,N,X,Y,DPARM,IPARM)
 c           CHARACTER*1 TRANSA
 c           INTEGER M,N,IPARM(*)
 c           DOUBLE PRECISION X(*),Y(*),DPARM(*)
@@ -70,13 +70,14 @@ c          with components larger than eta along the latest Lanczos vector
 c          will be purged.
 c        doption(3) = anorm. Estimate of || A ||.
 c     IOPTION: INTEGER array. Parameters for LANBPRO.
-c        ioption(1) = CGS.  If CGS.EQ.1 then reorthogonalization is done
-c          using iterated classical GRAM-SCHMIDT. IF CGS.EQ.0 then
-c          reorthogonalization is done using iterated modified Gram-Schmidt.
+c        ioption(1) = MGS.  If MGS.EQ.1 then reorthogonalization is done
+c          using iterated modified Gram-Schmidt. If MGS.EQ.0 (default)
+c          then reorthogonalization is done using iterated classical
+c          Gram-Schmidt.
 c        ioption(2) = ELR. If ELR.EQ.1 then extended local orthogonality is
 c          enforced among u_{k}, u_{k+1} and v_{k} and v_{k+1} respectively.
 c     INFO: INTEGER.
-c         INFO = 0: The K largest singular triplets were computed succesfully
+c         INFO = 0: The K largest singular triplets were computed successfully
 c         INFO = J>0, J<K: An invariant subspace of dimension J was found.
 c         INFO = J<0, |J|<K: Only |J| of K singular triplets converged within
 c           KMAX iterations.

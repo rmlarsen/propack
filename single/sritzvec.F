@@ -2,7 +2,7 @@
      c     V,ldv,work,in_lwrk,iwork)
 
 c
-c     DRITZVEC: Compute Ritz-vectors corresponding to the K largest
+c     SRITZVEC: Compute Ritz-vectors corresponding to the K largest
 c               or smallest (depending on the value of WHICH)
 c               Ritz-values for A from the Lanczos bidiagonalization
 c               A*V_{dim} = U_{dim+1}*B_{dim}.
@@ -31,7 +31,7 @@ c               value of WHICH)  singular values of A.
 c               On entry the first column of U contains the starting vector
 c               for the Lanczos bidiagonalization. A random starting vector
 c               is used if U is zero.
-c     LDU: INTEGER. Leading dimension of the array U. LDV >= M.
+c     LDU: INTEGER. Leading dimension of the array U. LDU >= M.
 c     V(LDV,DIM): REAL array. On return the first K columns of V
 c               will contain approximations to the right singular vectors
 c               corresponding to the K largest or smallest (depending on the

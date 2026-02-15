@@ -28,7 +28,7 @@ c           is computed.
 c     APROD: Subroutine defining the linear operator A.
 c            APROD should be of the form:
 c
-c           SUBROUTINE DAPROD(TRANSA,M,N,X,Y,DPARM,IPARM)
+c           SUBROUTINE APROD(TRANSA,M,N,X,Y,DPARM,IPARM)
 c           CHARACTER*1 TRANSA
 c           INTEGER M,N,IPARM(*)
 c           DOUBLE PRECISION X(*),Y(*),DPARM(*)
@@ -74,9 +74,10 @@ c          with components larger than eta along the latest Lanczos vector
 c          will be purged.
 c        doption(3) = anorm. Estimate of || A ||.
 c     IOPTION: INTEGER array.
-c        ioption(1) = CGS.  If CGS.EQ.1 then reorthogonalization is done
-c          using iterated classical GRAM-SCHMIDT. IF CGS.EQ.0 then
-c          reorthogonalization is done using iterated modified Gram-Schmidt.
+c        ioption(1) = MGS.  If MGS.EQ.1 then reorthogonalization is done
+c          using iterated modified Gram-Schmidt. If MGS.EQ.0 (default)
+c          then reorthogonalization is done using iterated classical
+c          Gram-Schmidt.
 c        ioption(2) = ELR. If ELR.EQ.1 then extended local orthogonality is
 c          enforced among u_{k}, u_{k+1} and v_{k} and v_{k+1} respectively.
 c     WORK(LWORK): DOUBLE PRECISION array of dimension >= 2*(m+n+k+1).
@@ -121,7 +122,7 @@ c     %-----------------%
 c     | Local variables |
 c     %-----------------%
       integer i,j,inu,imu,is,iidx,j0,iseed(4)
-      double precision eps,eps34,epsn2,sfmin,delta,eta,anorm,s
+      double precision eps,eps34,epsn2,delta,eta,anorm,s
       double precision mumax,numax,alpha,beta,a1,b1,amax,anormest
       logical force_reorth,full_reorth
       real t1,t2,t3
@@ -148,7 +149,6 @@ c     %---------------------------------%
       eps = dlamch('e')
       eps34 = eps**(3d0/4d0)
       epsn2 = sqrt(dble(max(m,n)))*eps
-      sfmin = dlamch('s')
 
 c     %------------------------%
 c     | Set default parameters |

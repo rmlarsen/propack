@@ -11,7 +11,7 @@ c     Gram-Schmidt. LDV is the leading dimension of the array containing
 c     V.
 c
 c     Which columns to orthogonalize against is decided by the integer
-c     array INDEX = [s_1,e_1, s_2,e_2,..., s_k,e_l, s_{l+1}], which
+c     array INDEX = [s_1,e_1, s_2,e_2,..., s_l,e_l, s_{l+1}], which
 c     selects the columns V(:,[s_1:e_1 s_2:e_2 ... s_l:e_l]). s_{l+1}
 c     must be larger than k and marks the end of INDEX.
 c
@@ -20,7 +20,7 @@ c
 c       ||VNEW'|| > ALPHA * ||VNEW|| ,
 c
 c     where VNEW' is the vector obtained by orthogonalizing VNEW.  If
-c     VNEW' fails to satisfy this after 4 tries, VNEW is deemed to lie
+c     VNEW' fails to satisfy this after 5 tries, VNEW is deemed to lie
 c     numerically in the span of V(:,[s_1:e_1 s_2:e_2 ... s_l:e_l]), and
 c     is set to the zero vector.
 c

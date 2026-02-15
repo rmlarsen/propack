@@ -2,7 +2,7 @@
      c     rnorm, doption, ioption, dwork, zwork, iwork, zparm, iparm,
      c     ierr)
 
-c     DLANBPRO: Computes K steps of the Lanczos bidiagonalization (LBD)
+c     ZLANBPRO: Computes K steps of the Lanczos bidiagonalization (LBD)
 c     algorithm with partial reorthogonalization (BPRO) with M-by-1 starting
 c     vector U(:,k0+1), producing a lower bidiagonal K+1-by-K matrix B_k, an
 c     N-by-K matrix V_k, an M-by-K+1 matrix U_{k+1} such that
@@ -75,9 +75,10 @@ c          with components larger than eta along the latest Lanczos vector
 c          will be purged.
 c        doption(3) = anorm. Estimate of || A ||.
 c     IOPTION: INTEGER array.
-c        ioption(1) = CGS.  If CGS.EQ.1 then reorthogonalization is done
-c          using iterated classical GRAM-SCHMIDT. IF CGS.EQ.0 then
-c          reorthogonalization is done using iterated modified Gram-Schmidt.
+c        ioption(1) = MGS.  If MGS.EQ.1 then reorthogonalization is done
+c          using iterated modified Gram-Schmidt. If MGS.EQ.0 (default)
+c          then reorthogonalization is done using iterated classical
+c          Gram-Schmidt.
 c        ioption(2) = ELR. If ELR.EQ.1 then extended local orthogonality is
 c          enforced among u_{k}, u_{k+1} and v_{k} and v_{k+1} respectively.
 c     DWORK(LWORK): DOUBLE PRECISION array of dimension >= m+n+2*k+2+max(m,n).
@@ -123,7 +124,7 @@ c     %-----------------%
 c     | Local variables |
 c     %-----------------%
       integer i,j,inu,imu,is,iidx,j0,iseed(4)
-      double precision eps,eps34,epsn2,sfmin,delta,eta,anorm,nrm
+      double precision eps,eps34,epsn2,delta,eta,anorm,nrm
       complex*16 s
       double precision mumax,numax,alpha,beta,a1,b1,amax,anormest
       logical force_reorth,full_reorth
@@ -153,7 +154,6 @@ c     %---------------------------------%
       eps = dlamch('e')
       eps34 = eps**(3d0/4d0)
       epsn2 = sqrt(dble(max(m,n)))*eps
-      sfmin = dlamch('s')
 
 c     %------------------------%
 c     | Set default parameters |
@@ -294,7 +294,7 @@ c     %-------------------------------------------%
       do j=j0,k
 
 c     %---------------------------------------------%
-c     | alpha_{j} v_{j} = A'*u_{j} - beta_{j} v_{j} |
+c     | alpha_{j} v_{j} = A^H*u_{j} - beta_{j} v_{j} |
 c     %---------------------------------------------%
          call cpu_time(t2)
          call aprod('c',m,n,U(1,j),V(1,j),zparm,iparm)
@@ -392,7 +392,7 @@ c     %------------------------------------------------%
             if (alpha .eq. zero) then
 c     %------------------------------------------------%
 c     | We failed to generate a new random vector      |
-c     | in span(A^T) orthogonal to span(V(:,1:j-1)).   |
+c     | in span(A^H) orthogonal to span(V(:,1:j-1)).   |
 c     | Most likely span(V(:,1:j-1)) is an invariant   |
 c     | subspace.                                      |
 c     %------------------------------------------------%
@@ -402,7 +402,7 @@ c     %------------------------------------------------%
             else
 c     %-------------------------------------------------%
 c     | We have managed to generate a random vector     |
-c     | in span(A^T) orthogonal to V(:,1:j-1), so we    |
+c     | in span(A^H) orthogonal to V(:,1:j-1), so we    |
 c     | can continue the LBD and "deflate" the subspace |
 c     | by setting alpha_{j} = 0.                       |
 c     %-------------------------------------------------%

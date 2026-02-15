@@ -2,7 +2,7 @@
      c     rnorm, soption, ioption, swork, cwork, iwork, cparm,
      c     iparm, ierr)
 
-c     DLANBPRO: Computes K steps of the Lanczos bidiagonalization (LBD)
+c     CLANBPRO: Computes K steps of the Lanczos bidiagonalization (LBD)
 c     algorithm with partial reorthogonalization (BPRO) with M-by-1 starting
 c     vector U(:,k0+1), producing a lower bidiagonal K+1-by-K matrix B_k, an
 c     N-by-K matrix V_k, an M-by-K+1 matrix U_{k+1} such that
@@ -29,10 +29,10 @@ c           is computed.
 c     APROD: Subroutine defining the linear operator A.
 c            APROD should be of the form:
 c
-c           SUBROUTINE DAPROD(TRANSA,M,N,X,Y,DPARM,IPARM)
+c           SUBROUTINE APROD(TRANSA,M,N,X,Y,CPARM,IPARM)
 c           CHARACTER*1 TRANSA
 c           INTEGER M,N,IPARM(*)
-c           COMPLEX X(*),Y(*),DPARM(*)
+c           COMPLEX X(*),Y(*),CPARM(*)
 c
 c           If TRANSA.EQ.'N' then the function should compute the matrix-vector
 c           product Y = A * X.
@@ -76,9 +76,10 @@ c          with components larger than eta along the latest Lanczos vector
 c          will be purged.
 c        soption(3) = anorm. Estimate of || A ||.
 c     IOPTION: INTEGER array.
-c        ioption(1) = CGS.  If CGS.EQ.1 then reorthogonalization is done
-c          using iterated classical GRAM-SCHMIDT. IF CGS.EQ.0 then
-c          reorthogonalization is done using iterated modified Gram-Schmidt.
+c        ioption(1) = MGS.  If MGS.EQ.1 then reorthogonalization is done
+c          using iterated modified Gram-Schmidt. If MGS.EQ.0 (default)
+c          then reorthogonalization is done using iterated classical
+c          Gram-Schmidt.
 c        ioption(2) = ELR. If ELR.EQ.1 then extended local orthogonality is
 c          enforced among u_{k}, u_{k+1} and v_{k} and v_{k+1} respectively.
 c     SWORK(LWORK): REAL array of dimension >= m+n+2*k+2+max(m,n).
@@ -124,7 +125,7 @@ c     %-----------------%
 c     | Local variables |
 c     %-----------------%
       integer i,j,inu,imu,is,iidx,j0,iseed(4)
-      real eps,eps34,epsn2,sfmin,delta,eta,anorm,nrm
+      real eps,eps34,epsn2,delta,eta,anorm,nrm
       complex s
       real mumax,numax,alpha,beta,a1,b1,amax,anormest
       logical force_reorth,full_reorth
@@ -154,7 +155,6 @@ c     %---------------------------------%
       eps = slamch('e')
       eps34 = eps**(3.0/4.0)
       epsn2 = sqrt(real(max(m,n)))*eps
-      sfmin = slamch('s')
 
 c     %------------------------%
 c     | Set default parameters |
@@ -295,7 +295,7 @@ c     %-------------------------------------------%
       do j=j0,k
 
 c     %---------------------------------------------%
-c     | alpha_{j} v_{j} = A'*u_{j} - beta_{j} v_{j} |
+c     | alpha_{j} v_{j} = A^H*u_{j} - beta_{j} v_{j} |
 c     %---------------------------------------------%
          call cpu_time(t2)
          call aprod('c',m,n,U(1,j),V(1,j),cparm,iparm)

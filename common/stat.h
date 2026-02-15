@@ -9,5 +9,3 @@ c
       common/timing/ nopx, nreorth, ndot, nrestart, nbsvd, nlandim,
      c     nsing, tmvopx, tgetu0, tlanbpro, tbsvd, tlansvd, tritzvec,
      c     trestart, treorth
-
-      external second

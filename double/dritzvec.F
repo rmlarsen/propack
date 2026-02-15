@@ -31,7 +31,7 @@ c               value of WHICH)  singular values of A.
 c               On entry the first column of U contains the starting vector
 c               for the Lanczos bidiagonalization. A random starting vector
 c               is used if U is zero.
-c     LDU: INTEGER. Leading dimension of the array U. LDV >= M.
+c     LDU: INTEGER. Leading dimension of the array U. LDU >= M.
 c     V(LDV,DIM): DOUBLE PRECISION array. On return the first K columns of V
 c               will contain approximations to the right singular vectors
 c               corresponding to the K largest or smallest (depending on the
