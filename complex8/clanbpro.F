@@ -318,6 +318,10 @@ c     %------------------------------------%
                do i=1,ioption(2)
                   s = pcdotc(n,V(1,j-1),1,V(1,j),1)
                   call pcaxpy(n,-s,V(1,j-1),1,V(1,j),1)
+                  if (beta .ne. zero) then
+                     beta = beta + real(s)
+                     B(j-1,2) = beta
+                  endif
                   nrm = pscnrm2(n,V(1,j),1)
                   if (nrm .ge. kappa*alpha) goto 10
                   alpha = nrm
@@ -370,11 +374,7 @@ c     %------------------------------%
 
             call sset_mu(j-1,swork(inu),iwork(iidx),eps)
             numax = eta
-            if (force_reorth) then
-               force_reorth = .false.
-            else
-               force_reorth = .true.
-            endif
+            force_reorth = .not. force_reorth
          endif
 
 c     %-----------------------------------------------%
@@ -443,6 +443,10 @@ c     %------------------------------------%
             do i=1,ioption(2)
                s = pcdotc(m,U(1,j),1,U(1,j+1),1)
                call pcaxpy(m,-s,U(1,j),1,U(1,j+1),1)
+               if (alpha .ne. zero) then
+                  alpha = alpha + real(s)
+                  B(j,1) = alpha
+               endif
                nrm = pscnrm2(m,U(1,j+1),1)
                if (nrm .ge. kappa*beta) goto 20
                beta = nrm
@@ -499,11 +503,7 @@ c     %--------------------------------------%
 
             call sset_mu(j,swork(imu),iwork(iidx),eps)
             mumax = eta
-            if (force_reorth) then
-               force_reorth = .false.
-            else
-               force_reorth = .true.
-            endif
+            force_reorth = .not. force_reorth
          endif
 
 c     %-----------------------------------------------%

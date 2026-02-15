@@ -92,7 +92,6 @@ c     %--------------------%
          else
             call dmgs(n,k,V,ldv,vnew,index)
          endif
-         ndot = ndot + k
          normvnew = pdnrm2(n,vnew,1)
          if (normvnew.gt.alpha*normvnew_0) goto 9999
       enddo
@@ -128,13 +127,13 @@ c     %------------%
 c     | Parameters |
 c     %------------%
       double precision one, zero
-      parameter(one = 1.0, zero = 0.0)
+      parameter(one = 1d0, zero = 0d0)
 c     %-----------------%
 c     | Local variables |
 c     %-----------------%
       integer i,j,p,q,l, ld
       integer tid, nt, cnk,st
-      double precision ylocal(n)
+      double precision ylocal(k)
 c     %--------------------%
 c     | External Functions |
 c     %--------------------%
@@ -185,7 +184,7 @@ c     Classical Gram-Schmidt: vnew = vnew - V(:,p:q)*(V(:,p:q)'*vnew)
                enddo
             endif
 c$OMP BARRIER
-            if (.not.tid.eq.0) then
+            if (tid.gt.0) then
 c$OMP CRITICAL
                do j=1,l
                   work(j) = work(j) + ylocal(j)
@@ -193,11 +192,8 @@ c$OMP CRITICAL
 c$OMP END CRITICAL
             endif
 c$OMP BARRIER
-            call dgemv('N',cnk,l,-one,V(st,p),ld,work,1,zero,
-     c           ylocal,1)
-            do j=1,cnk
-               vnew(st+j-1) = vnew(st+j-1) + ylocal(j)
-            enddo
+            call dgemv('N',cnk,l,-one,V(st,p),ld,work,1,one,
+     c           vnew(st),1)
          endif
          i = i+2
       enddo

@@ -316,7 +316,7 @@ c     %---------------------------------------------------------------------%
                   nshft = nshft + 1
                enddo
             else
-               do i=k+1,dim
+               do i=dim,k+1,-1
                   relgap = swork(ialpha1+k-1) - swork(ialpha1+i-1)
                   if (relgap.gt.soption(4)*swork(ialpha1+k-1)) then
                      swork(ishift + nshft) = swork(ialpha1+i-1)

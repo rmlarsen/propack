@@ -317,6 +317,10 @@ c     %------------------------------------%
                do i=1,ioption(2)
                   s = pzdotc(n,V(1,j-1),1,V(1,j),1)
                   call pzaxpy(n,-s,V(1,j-1),1,V(1,j),1)
+                  if (beta .ne. zero) then
+                     beta = beta + dble(s)
+                     B(j-1,2) = beta
+                  endif
                   nrm = pdznrm2(n,V(1,j),1)
                   if (nrm .ge. kappa*alpha) goto 10
                   alpha = nrm
@@ -369,11 +373,7 @@ c     %------------------------------%
 
             call dset_mu(j-1,dwork(inu),iwork(iidx),eps)
             numax = eta
-            if (force_reorth) then
-               force_reorth = .false.
-            else
-               force_reorth = .true.
-            endif
+            force_reorth = .not. force_reorth
          endif
 
 c     %-----------------------------------------------%
@@ -442,6 +442,10 @@ c     %------------------------------------%
             do i=1,ioption(2)
                s = pzdotc(m,U(1,j),1,U(1,j+1),1)
                call pzaxpy(m,-s,U(1,j),1,U(1,j+1),1)
+               if (alpha .ne. zero) then
+                  alpha = alpha + dble(s)
+                  B(j,1) = alpha
+               endif
                nrm = pdznrm2(m,U(1,j+1),1)
                if (nrm .ge. kappa*beta) goto 20
                beta = nrm
@@ -497,11 +501,7 @@ c     %--------------------------------------%
      c              kappa, zwork(is),ioption(1))
             call dset_mu(j,dwork(imu),iwork(iidx),eps)
             mumax = eta
-            if (force_reorth) then
-               force_reorth = .false.
-            else
-               force_reorth = .true.
-            endif
+            force_reorth = .not. force_reorth
          endif
 
 c     %-----------------------------------------------%

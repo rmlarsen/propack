@@ -112,12 +112,7 @@ c-------------------- Here begins executable code ---------------------
 
       if (n.lt.1) return
       if (lsame(jobq,'Y')) then
-         do j=1,n+1
-            do i=1,n+1
-               Qt(i,j) = 0.0
-            enddo
-            Qt(j,j) = 1.0
-         enddo
+         call dlaset('A',n+1,n+1,0d0,1d0,Qt,ldq)
       endif
       do i=1,n-1
          call dlartg(d(i),e(i),cs,sn,r)
@@ -136,16 +131,16 @@ c-------------------- Here begins executable code ---------------------
       if (.not.ignorelast) then
          call dlartg(d(n),e(n),cs,sn,r)
          d(n) = r
-         e(n) = 0.0
+         e(n) = 0d0
          c1 = sn
          c2 = cs
          if (lsame(jobq,'Y')) then
-            do j=1,i
-               Qt(i+1,j) = -sn*Qt(i,j)
-               Qt(i,j) = cs*Qt(i,j)
+            do j=1,n
+               Qt(n+1,j) = -sn*Qt(n,j)
+               Qt(n,j) = cs*Qt(n,j)
             enddo
-            Qt(i,i+1) = sn
-            Qt(i+1,i+1) = cs
+            Qt(n,n+1) = sn
+            Qt(n+1,n+1) = cs
          endif
       endif
       end
@@ -192,7 +187,7 @@ c-------------------- Here begins executable code ---------------------
                if (abs(theta(i)-theta(i+l)) .lt. eps34*(theta(i))) then
                   if (bound(i).gt.tol .and. bound(i+l).gt.tol) then
                      bound(i+l) = dlapy2(bound(i),bound(i+l))
-                     bound(i) = 0.0
+                     bound(i) = 0d0
                   endif
                endif
             endif

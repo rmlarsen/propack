@@ -366,11 +366,7 @@ c     %------------------------------%
      c           kappa,work(is),ioption(1))
             call dset_mu(j-1,work(inu),iwork(iidx),eps)
             numax = eta
-            if (force_reorth) then
-               force_reorth = .false.
-            else
-               force_reorth = .true.
-            endif
+            force_reorth = .not. force_reorth
          endif
 
 c     %-----------------------------------------------%
@@ -499,11 +495,7 @@ c     %--------------------------------------%
      c              kappa, work(is),ioption(1))
             call dset_mu(j,work(imu),iwork(iidx),eps)
             mumax = eta
-            if (force_reorth) then
-               force_reorth = .false.
-            else
-               force_reorth = .true.
-            endif
+            force_reorth = .not. force_reorth
          endif
 
 c     %-----------------------------------------------%

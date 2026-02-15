@@ -92,7 +92,6 @@ c     %--------------------%
          else
             call zmgs(n,k,V,ldv,vnew,index)
          endif
-         ndot = ndot + k
          normvnew = pdznrm2(n,vnew,1)
          if (normvnew.gt.alpha*normvnew_0) goto 9999
       enddo
@@ -129,7 +128,7 @@ c     | Local variables |
 c     %-----------------%
       integer i,j,p,q,l, ld
       integer tid, nt, cnk,st
-      complex*16 ylocal(n)
+      complex*16 ylocal(k)
 c     %--------------------%
 c     | External Functions |
 c     %--------------------%
@@ -189,10 +188,7 @@ c$OMP END CRITICAL
             endif
 c$OMP BARRIER
             call zgemv('N',cnk,l,dcmplx(-1d0,0d0),V(st,p),ld,work,1,
-     c           dcmplx(0d0,0d0),ylocal,1)
-            do j=1,cnk
-               vnew(st+j-1) = vnew(st+j-1) + ylocal(j)
-            enddo
+     c           dcmplx(1d0,0d0),vnew(st),1)
          endif
          i = i+2
       enddo

@@ -23,7 +23,7 @@ c     %------------%
 c     %-----------------%
 c     | Local variables |
 c     %-----------------%
-      integer i,info
+      integer info
 
 c     %----------------------%
 c     | External Subroutines |
@@ -39,7 +39,7 @@ c     %--------------------%
       if (abs(alpha).ge.slamch('s')) then
          call pcsscal(n,one/alpha, x, 1)
       else
-         call clascl('General',i,i,alpha,one,n,1,x,n,info)
+         call clascl('General',0,0,alpha,one,n,1,x,n,info)
       endif
 
       end

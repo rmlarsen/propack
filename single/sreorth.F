@@ -134,7 +134,7 @@ c     | Local variables |
 c     %-----------------%
       integer i,j,p,q,l, ld
       integer tid, nt, cnk,st
-      real ylocal(n)
+      real ylocal(k)
 c     %--------------------%
 c     | External Functions |
 c     %--------------------%
@@ -193,11 +193,8 @@ c$OMP CRITICAL
 c$OMP END CRITICAL
             endif
 c$OMP BARRIER
-            call sgemv('N',cnk,l,-one,V(st,p),ld,work,1,zero,
-     c           ylocal,1)
-            do j=1,cnk
-               vnew(st+j-1) = vnew(st+j-1) + ylocal(j)
-            enddo
+            call sgemv('N',cnk,l,-one,V(st,p),ld,work,1,one,
+     c           vnew(st),1)
          endif
          i = i+2
       enddo

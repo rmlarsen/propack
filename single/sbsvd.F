@@ -112,12 +112,7 @@ c-------------------- Here begins executable code ---------------------
 
       if (n.lt.1) return
       if (lsame(jobq,'Y')) then
-         do j=1,n+1
-            do i=1,n+1
-               Qt(i,j) = 0.0
-            enddo
-            Qt(j,j) = 1.0
-         enddo
+         call slaset('A',n+1,n+1,0.0,1.0,Qt,ldq)
       endif
       do i=1,n-1
          call slartg(d(i),e(i),cs,sn,r)
@@ -140,12 +135,12 @@ c-------------------- Here begins executable code ---------------------
          c1 = sn
          c2 = cs
          if (lsame(jobq,'Y')) then
-            do j=1,i
-               Qt(i+1,j) = -sn*Qt(i,j)
-               Qt(i,j) = cs*Qt(i,j)
+            do j=1,n
+               Qt(n+1,j) = -sn*Qt(n,j)
+               Qt(n,j) = cs*Qt(n,j)
             enddo
-            Qt(i,i+1) = sn
-            Qt(i+1,i+1) = cs
+            Qt(n,n+1) = sn
+            Qt(n+1,n+1) = cs
          endif
       endif
       end
