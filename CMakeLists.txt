@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.14)
 project(PROPACK VERSION 2.2 LANGUAGES Fortran)
 
+include(GNUInstallDirs)
+
 # ---------------------------------------------------------------------------
 # Options
 # ---------------------------------------------------------------------------
@@ -27,12 +29,32 @@ endif()
 # ---------------------------------------------------------------------------
 if(CMAKE_Fortran_COMPILER_ID MATCHES "GNU")
   set(_base_flags "-fno-second-underscore -Wall")
-  if(NOT CMAKE_Fortran_FLAGS)
-    set(CMAKE_Fortran_FLAGS "${_base_flags}" CACHE STRING "" FORCE)
-  endif()
-  if(NOT CMAKE_Fortran_FLAGS_RELEASE)
-    set(CMAKE_Fortran_FLAGS_RELEASE "-O3 -funroll-all-loops" CACHE STRING "" FORCE)
-  endif()
+  set(_release_flags "-O3 -funroll-all-loops")
+elseif(CMAKE_Fortran_COMPILER_ID MATCHES "IntelLLVM")
+  set(_base_flags "-warn general")
+  set(_release_flags "-O3")
+elseif(CMAKE_Fortran_COMPILER_ID MATCHES "Intel")
+  set(_base_flags "-warn general")
+  set(_release_flags "-O3")
+elseif(CMAKE_Fortran_COMPILER_ID MATCHES "LLVMFlang|Flang")
+  set(_base_flags "-Wall")
+  set(_release_flags "-O3")
+elseif(CMAKE_Fortran_COMPILER_ID MATCHES "NVHPC")
+  set(_base_flags "-Minform=warn")
+  set(_release_flags "-O3 -fast")
+elseif(CMAKE_Fortran_COMPILER_ID MATCHES "NAG")
+  set(_base_flags "-w=all")
+  set(_release_flags "-O3")
+else()
+  set(_base_flags "")
+  set(_release_flags "-O3")
+endif()
+
+if(_base_flags AND NOT CMAKE_Fortran_FLAGS)
+  set(CMAKE_Fortran_FLAGS "${_base_flags}" CACHE STRING "" FORCE)
+endif()
+if(NOT CMAKE_Fortran_FLAGS_RELEASE)
+  set(CMAKE_Fortran_FLAGS_RELEASE "${_release_flags}" CACHE STRING "" FORCE)
 endif()
 
 if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
@@ -89,13 +111,19 @@ function(_add_propack_variant PREFIX TYPE_DIR REAL_DIR REAL_PREFIX)
   endif()
 
   set(_lib_name ${PREFIX}propack)
-  add_library(${_lib_name} STATIC ${_own_sources} ${_real_sources})
+  add_library(${_lib_name} ${_own_sources} ${_real_sources})
+  add_library(PROPACK::${_lib_name} ALIAS ${_lib_name})
 
   target_include_directories(${_lib_name} PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/${TYPE_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}/common
   )
   target_link_libraries(${_lib_name} PUBLIC propack_common LAPACK::LAPACK)
+
+  install(TARGETS ${_lib_name} EXPORT PROPACKTargets
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+  )
   if(PROPACK_USE_OPENMP)
     target_link_libraries(${_lib_name} PUBLIC OpenMP::OpenMP_Fortran)
   endif()
@@ -146,40 +174,56 @@ function(_add_propack_variant PREFIX TYPE_DIR REAL_DIR REAL_PREFIX)
         configure_file(${_f} ${_runtime_dir}/Output/${_fname} COPYONLY)
       endforeach()
 
-      # The Fortran programs read from stdin.  CTest does not natively
-      # support input redirection, so we use a small shell wrapper.
-      # This works on all Unix-like systems and on Windows with Git Bash
-      # or MSYS2.  For MSVC/NMake on Windows you would need a .bat
-      # wrapper instead, but Fortran + LAPACK users are overwhelmingly
-      # on Unix or using MinGW/MSYS2.
+      # The Fortran programs read from stdin.  Use a CMake script wrapper
+      # for portable input redirection (works on Unix and native Windows).
+      set(_stdin_script ${CMAKE_CURRENT_SOURCE_DIR}/cmake/run_with_stdin.cmake)
+
       add_test(
         NAME ${PREFIX}propack_example_run
-        COMMAND sh -c "$<TARGET_FILE:${PREFIX}propack_example> < example.in"
+        COMMAND ${CMAKE_COMMAND}
+          -DEXE=$<TARGET_FILE:${PREFIX}propack_example>
+          -DINPUT=${_runtime_dir}/example.in
+          -P ${_stdin_script}
         WORKING_DIRECTORY ${_runtime_dir}
+      )
+      set_tests_properties(${PREFIX}propack_example_run PROPERTIES
+        FIXTURES_SETUP ${PREFIX}propack_example_fixture
       )
 
       add_test(
         NAME ${PREFIX}propack_example_irl_run
-        COMMAND sh -c "$<TARGET_FILE:${PREFIX}propack_example_irl> < example_irl.in"
+        COMMAND ${CMAKE_COMMAND}
+          -DEXE=$<TARGET_FILE:${PREFIX}propack_example_irl>
+          -DINPUT=${_runtime_dir}/example_irl.in
+          -P ${_stdin_script}
         WORKING_DIRECTORY ${_runtime_dir}
+      )
+      set_tests_properties(${PREFIX}propack_example_irl_run PROPERTIES
+        FIXTURES_SETUP ${PREFIX}propack_example_irl_fixture
       )
 
       add_test(
         NAME ${PREFIX}propack_verify
-        COMMAND sh -c "$<TARGET_FILE:${PREFIX}propack_compare> < compare.in"
+        COMMAND ${CMAKE_COMMAND}
+          -DEXE=$<TARGET_FILE:${PREFIX}propack_compare>
+          -DINPUT=${_runtime_dir}/compare.in
+          -P ${_stdin_script}
         WORKING_DIRECTORY ${_runtime_dir}
       )
       set_tests_properties(${PREFIX}propack_verify PROPERTIES
-        DEPENDS "${PREFIX}propack_example_run"
+        FIXTURES_REQUIRED ${PREFIX}propack_example_fixture
       )
 
       add_test(
         NAME ${PREFIX}propack_verify_irl
-        COMMAND sh -c "$<TARGET_FILE:${PREFIX}propack_compare> < compare_irl.in"
+        COMMAND ${CMAKE_COMMAND}
+          -DEXE=$<TARGET_FILE:${PREFIX}propack_compare>
+          -DINPUT=${_runtime_dir}/compare_irl.in
+          -P ${_stdin_script}
         WORKING_DIRECTORY ${_runtime_dir}
       )
       set_tests_properties(${PREFIX}propack_verify_irl PROPERTIES
-        DEPENDS "${PREFIX}propack_example_irl_run"
+        FIXTURES_REQUIRED ${PREFIX}propack_example_irl_fixture
       )
     endif()
   endif()
@@ -188,7 +232,7 @@ endfunction()
 # ---------------------------------------------------------------------------
 # Common library (shared integer utilities + statistics printing)
 # ---------------------------------------------------------------------------
-add_library(propack_common STATIC
+add_library(propack_common
   common/iblasext.F
   common/printstat.F
 )
@@ -196,6 +240,11 @@ target_include_directories(propack_common PRIVATE
   ${CMAKE_CURRENT_SOURCE_DIR}/common
 )
 target_link_libraries(propack_common PUBLIC LAPACK::LAPACK)
+
+install(TARGETS propack_common EXPORT PROPACKTargets
+  ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+  LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+)
 
 # ---------------------------------------------------------------------------
 # Build requested precision variants
@@ -213,3 +262,32 @@ endif()
 if(PROPACK_BUILD_COMPLEX8)
   _add_propack_variant(c       complex8    single    s)
 endif()
+
+# ---------------------------------------------------------------------------
+# CMake package config for find_package(PROPACK)
+# ---------------------------------------------------------------------------
+include(CMakePackageConfigHelpers)
+
+install(EXPORT PROPACKTargets
+  FILE PROPACKTargets.cmake
+  NAMESPACE PROPACK::
+  DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/PROPACK
+)
+
+configure_package_config_file(
+  ${CMAKE_CURRENT_SOURCE_DIR}/cmake/PROPACKConfig.cmake.in
+  ${CMAKE_CURRENT_BINARY_DIR}/PROPACKConfig.cmake
+  INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/PROPACK
+)
+
+write_basic_package_version_file(
+  ${CMAKE_CURRENT_BINARY_DIR}/PROPACKConfigVersion.cmake
+  VERSION ${PROJECT_VERSION}
+  COMPATIBILITY SameMajorVersion
+)
+
+install(FILES
+  ${CMAKE_CURRENT_BINARY_DIR}/PROPACKConfig.cmake
+  ${CMAKE_CURRENT_BINARY_DIR}/PROPACKConfigVersion.cmake
+  DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/PROPACK
+)

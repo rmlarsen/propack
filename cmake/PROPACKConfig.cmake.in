@@ -1,0 +1,5 @@
+@PACKAGE_INIT@
+include(CMakeFindDependencyMacro)
+find_dependency(LAPACK)
+include("${CMAKE_CURRENT_LIST_DIR}/PROPACKTargets.cmake")
+check_required_components(PROPACK)
