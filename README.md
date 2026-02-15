@@ -33,6 +33,7 @@ ctest --test-dir build
 | `PROPACK_BUILD_DOUBLE` | `ON` | Build double-precision (d) library |
 | `PROPACK_BUILD_COMPLEX8` | `ON` | Build complex single-precision (c) library |
 | `PROPACK_BUILD_COMPLEX16` | `ON` | Build complex double-precision (z) library |
+| `PROPACK_BUILD_CXX_API` | `ON` | Build C++17 API wrappers (`propack.hpp`) |
 
 Example:
 
@@ -156,10 +157,11 @@ for full parameter documentation.
 
 ## C++ API
 
-When `PROPACK_BUILD_CXX_API=ON` (the default), a header-only C++ interface is
+When `PROPACK_BUILD_CXX_API=ON` (the default), a header-only C++17 interface is
 installed as `propack.hpp`. It provides `propack::lansvd<T>()` and
 `propack::lansvd_irl<T>()` for `T` = `double`, `float`, `std::complex<double>`,
-or `std::complex<float>`. Workspace is managed automatically.
+or `std::complex<float>`. Workspace is managed automatically. Requires a C++17
+compiler.
 
 ```cpp
 #include <propack.hpp>
