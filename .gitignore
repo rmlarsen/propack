@@ -1,0 +1,20 @@
+# CMake
+build/
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+Makefile
+*.cmake
+Testing/
+
+# Old build system artifacts
+make.inc
+*.o
+*.a
+*.x
+*.il
+*.ascii
+rii_files/
+
+# Editor
+*~
