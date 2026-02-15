@@ -113,7 +113,7 @@ c     %-----------------%
 c     | Local variables |
 c     %-----------------%
       integer i,j,dj,jold,ibnd,ib,ib1,iwrk,ierr,ip,iq,neig,lwrk,lapinfo
-      real eps,eps34,epsn2,sfmin,anorm,rnorm,tol
+      real eps,eps34,epsn2,anorm,rnorm,tol
       real t0,t1,t2,t3
 
 c     %----------------------%
@@ -142,7 +142,7 @@ c     %---------------------------------%
       eps = slamch('e')
       eps34 = eps**(3.0/4.0)
       epsn2 = sqrt(real(max(m,n)))*eps/2.0
-      sfmin = slamch('s')
+
 
 c     %--------------------------------%
 c     | Guard against absurd arguments |
@@ -199,6 +199,10 @@ c     %---------------------------------------------%
          call  cpu_time(t3)
          tbsvd = tbsvd + (t3-t2)
          nbsvd = nbsvd + 1
+         if (lapinfo.ne.0) then
+            info = -1000
+            goto 50
+         endif
 
          if (j.gt.5) then
             anorm = work(ib1)

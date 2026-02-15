@@ -133,14 +133,14 @@ c     %------------%
 c     | Parameters |
 c     %------------%
       double precision one, zero
-      parameter(one = 1.0, zero = 0.0)
+      parameter(one = 1d0, zero = 0d0)
 
 c     %-----------------%
 c     | Local variables |
 c     %-----------------%
       integer k,i,ibnd,iwrk,ierr,ip,iq,nconv,lwrk,kold,dim,first,last
       integer ialpha,ibeta,ialpha1,ibeta1,ishift,nshft,lapinfo,idx
-      double precision eps,eps34,epsn2,sfmin,anorm,rnorm,tol
+      double precision eps,eps34,epsn2,anorm,rnorm,tol
       double precision shift, relgap, deflate_tol
       real t0,t1,t2,t3
       integer st,cnk,wst,wcnk, tid, nt
@@ -175,7 +175,7 @@ c     %---------------------------------%
       eps = dlamch('e')
       eps34 = eps**(3.0/4.0)
       epsn2 = sqrt(dble(max(m,n)))*eps/2.0
-      sfmin = dlamch('s')
+
 
 c     %--------------------------------%
 c     | Guard against absurd arguments |
@@ -237,6 +237,10 @@ c     %---------------------------------------------%
          call  cpu_time(t3)
          tbsvd = tbsvd + (t3-t2)
          nbsvd = nbsvd + 1
+         if (lapinfo.ne.0) then
+            info = -1000
+            goto 50
+         endif
 
          if (dim.gt.5 .and. lsame(which,'l')) then
             anorm = work(ialpha1)
@@ -334,14 +338,8 @@ c     | algorithm and accumulate rotations such that       |
 c     |   B_{dim}^{+} = P * B_{dim} * Q^T                  |
 c     | Each unreduced sub-matrix is treated independently |
 c     %----------------------------------------------------%
-            call dzero((dim+1)*(dim+1),work(ip),1)
-            call dzero(dim*dim,work(iq),1)
-            do i=1,dim+1
-               work(ip+(i-1)*(dim+2)) = one
-            enddo
-            do i=1,dim
-               work(iq+(i-1)*(dim+1)) = one
-            enddo
+            call dlaset('A',dim+1,dim+1,zero,one,work(ip),dim+1)
+            call dlaset('A',dim,dim,zero,one,work(iq),dim)
 
 c     Note: The implicit LQ steps applied in dbsvdstep called below are not
 c     stable if the off-diagonal elements of B*B^T (which equal

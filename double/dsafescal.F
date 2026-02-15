@@ -17,7 +17,7 @@ c     %------------%
 c     | Parameters |
 c     %------------%
       double precision one
-      parameter(one = 1.0)
+      parameter(one = 1d0)
 
 c     %-----------------%
 c     | Local variables |

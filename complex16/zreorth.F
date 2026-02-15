@@ -132,7 +132,7 @@ c     %-----------------%
 c     %--------------------%
 c     | External Functions |
 c     %--------------------%
-      external dgemv
+      external zgemv
 #ifdef _OPENMP
       integer omp_get_thread_num, omp_get_num_threads
       external omp_get_thread_num, omp_get_num_threads

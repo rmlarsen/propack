@@ -115,7 +115,7 @@ c     %--------------------%
          mu(j) = beta(j-1)*nu(j-1)
          d = eps1*(dlapy2(alpha(j), beta(j)) +
      c        dlapy2(alpha(j), beta(j-1))) + eps1*anorm
-         mu(j) = (mu(j) + sign(d,mu(j))) / beta(j)
+         mu(j) = (mu(j) + dsign(d,mu(j))) / beta(j)
          mumax = max(mumax,abs(mu(j)))
       endif
       mu(j+1) = one
@@ -137,7 +137,7 @@ c     %------------%
 c     | Parameters |
 c     %------------%
       double precision one, zero
-      parameter(one = 1.0, zero = 0.0)
+      parameter(one = 1d0, zero = 0d0)
 
 c     %-----------------%
 c     | Local variables |

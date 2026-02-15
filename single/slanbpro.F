@@ -122,7 +122,7 @@ c     %-----------------%
 c     | Local variables |
 c     %-----------------%
       integer i,j,inu,imu,is,iidx,j0,iseed(4)
-      real eps,eps34,epsn2,epsn,sfmin,delta,eta,anorm,s
+      real eps,eps34,epsn2,delta,eta,anorm,s
       real mumax,numax,alpha,beta,a1,b1,amax,anormest
       logical force_reorth,full_reorth
       real t1,t2,t3
@@ -148,9 +148,7 @@ c     | Set machine dependent constants |
 c     %---------------------------------%
       eps = slamch('e')
       eps34 = eps**(3.0/4.0)
-      epsn = real(max(m,n))*eps
       epsn2 = sqrt(real(max(m,n)))*eps
-      sfmin = slamch('s')
 
 c     %------------------------%
 c     | Set default parameters |
@@ -377,8 +375,6 @@ c     %-----------------------------------------------%
 c     | Check whether an invariant subspace was found |
 c     %-----------------------------------------------%
          if (alpha .lt. anorm*epsn2 .and. j.lt.k) then
-            write(*,*) 'found invariant alpha subspace'
-            write(*,*) alpha, ' < ', anorm*epsn2
             rnorm = alpha
             alpha = zero
 c     %------------------------------------------------%
@@ -509,8 +505,6 @@ c     %-----------------------------------------------%
 c     | Check whether an invariant subspace was found |
 c     %-----------------------------------------------%
          if (beta .lt. anorm*epsn2 .and. j.lt.k) then
-            write(*,*) 'found invariant beta subspace'
-            write(*,*) beta, ' < ', anorm*epsn2
             rnorm = beta
             beta = zero
 c     %-----------------------------------------------%
