@@ -4,7 +4,7 @@ CMakeCache.txt
 CMakeFiles/
 cmake_install.cmake
 Makefile
-*.cmake
+!cmake/
 Testing/
 
 # Old build system artifacts
