@@ -80,10 +80,13 @@ subroutine propack_zlansvd(jobu, jobv, m, n, k, kmax, &
 contains
 
   subroutine aprod_adapter(transa, m, n, x, y, zparm, iparm)
+    use iso_c_binding, only: c_char
     character*1                :: transa
     integer                    :: m, n, iparm(*)
     complex(c_double_complex)  :: x(*), y(*), zparm(*)
-    call fp(transa, m, n, x, y, ud)
+    character(c_char) :: transa_c
+    transa_c = transa
+    call fp(transa_c, m, n, x, y, ud)
   end subroutine
 
 end subroutine propack_zlansvd
@@ -154,10 +157,13 @@ subroutine propack_zlansvd_irl(which, jobu, jobv, m, n, &
 contains
 
   subroutine aprod_adapter(transa, m, n, x, y, zparm, iparm)
+    use iso_c_binding, only: c_char
     character*1                :: transa
     integer                    :: m, n, iparm(*)
     complex(c_double_complex)  :: x(*), y(*), zparm(*)
-    call fp(transa, m, n, x, y, ud)
+    character(c_char) :: transa_c
+    transa_c = transa
+    call fp(transa_c, m, n, x, y, ud)
   end subroutine
 
 end subroutine propack_zlansvd_irl

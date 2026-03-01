@@ -30,7 +30,7 @@ struct Options {
     double delta = 0;              // level of orthogonality (0 = sqrt(eps))
     double eta = 0;                // reorth threshold (0 = eps^(3/4)*3/4)
     double anorm = 0;              // ||A|| estimate (0 = auto)
-    bool use_mgs = false;          // use iterated MGS instead of CGS
+    bool use_mgs = true;           // use iterated MGS instead of CGS
     bool extended_local_reorth = false;  // extended local reorthogonalization
 };
 

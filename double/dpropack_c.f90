@@ -80,10 +80,16 @@ subroutine propack_dlansvd(jobu, jobv, m, n, k, kmax, &
 contains
 
   subroutine aprod_adapter(transa, m, n, x, y, dparm, iparm)
+    use iso_c_binding, only: c_char, c_int
     character*1    :: transa
     integer        :: m, n, iparm(*)
     real(c_double) :: x(*), y(*), dparm(*)
-    call fp(transa, m, n, x, y, ud)
+    ! Explicitly convert Fortran character to C character to avoid
+    ! ABI mismatch: Fortran passes character*1 by reference with hidden
+    ! length, but the bind(C) callback expects character(c_char) by value.
+    character(c_char) :: transa_c
+    transa_c = transa
+    call fp(transa_c, m, n, x, y, ud)
   end subroutine
 
 end subroutine propack_dlansvd
@@ -151,10 +157,16 @@ subroutine propack_dlansvd_irl(which, jobu, jobv, m, n, &
 contains
 
   subroutine aprod_adapter(transa, m, n, x, y, dparm, iparm)
+    use iso_c_binding, only: c_char, c_int
     character*1    :: transa
     integer        :: m, n, iparm(*)
     real(c_double) :: x(*), y(*), dparm(*)
-    call fp(transa, m, n, x, y, ud)
+    ! Explicitly convert Fortran character to C character to avoid
+    ! ABI mismatch: Fortran passes character*1 by reference with hidden
+    ! length, but the bind(C) callback expects character(c_char) by value.
+    character(c_char) :: transa_c
+    transa_c = transa
+    call fp(transa_c, m, n, x, y, ud)
   end subroutine
 
 end subroutine propack_dlansvd_irl
