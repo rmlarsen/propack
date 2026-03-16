@@ -128,6 +128,7 @@ c     %-----------------%
       real eps,eps34,epsn2,delta,eta,anorm,nrm
       complex s
       real mumax,numax,alpha,beta,a1,b1,amax,anormest
+      real anorm_frob,eps1_aprod,eps1_atprod
       logical force_reorth,full_reorth
       real t1,t2,t3
 
@@ -155,6 +156,10 @@ c     %---------------------------------%
       eps = slamch('e')
       eps34 = eps**(3.0/4.0)
       epsn2 = sqrt(real(max(m,n)))*eps
+      eps1_aprod = 5.0*sqrt(real(n))*eps
+      eps1_atprod = 5.0*sqrt(real(m))*eps
+         if (soption(5).gt.zero) eps1_aprod = soption(5)
+         if (soption(6).gt.zero) eps1_atprod = soption(6)
 
 c     %------------------------%
 c     | Set default parameters |
@@ -217,6 +222,7 @@ c     | Prepare Lanczos iteration |
 c     %---------------------------%
       if (k0.eq.0) then
          amax = zero
+         anorm_frob = zero
          alpha = zero
          beta = rnorm
          force_reorth = .false.
@@ -259,7 +265,25 @@ c     %---------------------------------------------------%
          call csafescal(m,rnorm,U(1,k0+1))
          call sset_mu(k0,swork(imu),iwork(iidx),epsn2)
          call sset_mu(k0,swork(inu),iwork(iidx),epsn2)
+c     %---------------------------------------------------%
+c     | Zero mu/nu for indices >= k0 and restore diagonal |
+c     | invariant after implicit restart.                 |
+c     %---------------------------------------------------%
+         do j=k0+1,k
+            swork(imu+j-1) = zero
+            swork(inu+j-1) = zero
+         enddo
+         swork(imu+k0-1) = one
          beta = rnorm
+
+c     %-----------------------------------------------%
+c     | Initialize running Frobenius norm from B_k0   |
+c     %-----------------------------------------------%
+         anorm_frob = zero
+         do j=1,k0
+            anorm_frob = slapy2(anorm_frob, B(j,1))
+            anorm_frob = slapy2(anorm_frob, B(j,2))
+         enddo
 
 c     %--------------------------------------%
 c     | Estimate ||B||_2^2 as ||B^T * B||_1  |
@@ -354,7 +378,8 @@ c     | Update the nu recurrence |
 c     %--------------------------%
          if (.not.full_reorth .and. alpha.ne.zero) then
             call supdate_nu(numax,swork(imu),swork(inu),j,
-     c           B(1,1),B(1,2),anorm,epsn2)
+     c           B(1,1),B(1,2),max(anorm_frob,anorm),
+     c           eps1_aprod,eps1_atprod)
          endif
 
 c     %------------------------------%
@@ -475,7 +500,8 @@ c     | Update the mu recurrence |
 c     %--------------------------%
          if (.not.full_reorth .and. beta.ne.zero) then
             call supdate_mu(mumax,swork(imu),swork(inu),j,B(1,1),
-     c           B(1,2),anorm,epsn2)
+     c           B(1,2),max(anorm_frob,anorm),
+     c           eps1_aprod,eps1_atprod)
          endif
 
 c     %--------------------------------------%
@@ -547,6 +573,12 @@ c     %------------------------------------------------%
      c           (delta*beta .lt. anorm*eps)) then
             ierr = j
          endif
+
+c     %----------------------------------------%
+c     | Update running Frobenius norm estimate |
+c     %----------------------------------------%
+         anorm_frob = slapy2(anorm_frob, B(j,1))
+         anorm_frob = slapy2(anorm_frob, beta)
 
          B(j,2) = beta
          if (beta.ne.zero .and. beta.ne.one) then

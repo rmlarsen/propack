@@ -30,7 +30,9 @@ struct Options {
     double delta = 0;              // level of orthogonality (0 = sqrt(eps))
     double eta = 0;                // reorth threshold (0 = eps^(3/4)*3/4)
     double anorm = 0;              // ||A|| estimate (0 = auto)
-    bool use_mgs = true;           // use iterated MGS instead of CGS
+    double eps1_aprod = 0;         // rounding error for A*v (0 = auto: 5*sqrt(n)*eps)
+    double eps1_atprod = 0;        // rounding error for A'*u (0 = auto: 5*sqrt(m)*eps)
+    bool use_mgs = false;          // use iterated MGS instead of CGS
     bool extended_local_reorth = false;  // extended local reorthogonalization
 };
 
@@ -229,12 +231,16 @@ inline void fill_doption(Real* doption, const Options& opts) {
     doption[0] = static_cast<Real>(opts.delta);
     doption[1] = static_cast<Real>(opts.eta);
     doption[2] = static_cast<Real>(opts.anorm);
+    doption[3] = Real(0);  // unused by lansvd (only by lansvd_irl)
+    doption[4] = static_cast<Real>(opts.eps1_aprod);
+    doption[5] = static_cast<Real>(opts.eps1_atprod);
 }
 
 template<typename Real>
 inline void fill_doption_irl(Real* doption, const IRLOptions& opts) {
     fill_doption(doption, opts);
     doption[3] = static_cast<Real>(opts.min_relgap);
+    // doption[4] and doption[5] already set by fill_doption
 }
 
 inline void fill_ioption(int* ioption, const Options& opts) {
@@ -266,7 +272,7 @@ template<typename Scalar>
     std::vector<Real> sigma(k);
     std::vector<Real> bnd(k);
 
-    Real doption[3];
+    Real doption[6];
     int ioption[2];
     detail::fill_doption(doption, opts);
     detail::fill_ioption(ioption, opts);
@@ -327,7 +333,7 @@ template<typename Scalar>
     std::vector<Real> sigma(nwanted);
     std::vector<Real> bnd(nwanted);
 
-    Real doption[4];
+    Real doption[6];
     int ioption[2];
     detail::fill_doption_irl(doption, opts);
     detail::fill_ioption(ioption, opts);

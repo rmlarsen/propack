@@ -50,7 +50,7 @@ endif()
 # Default Fortran flags (only when not already set by the user)
 # ---------------------------------------------------------------------------
 if(CMAKE_Fortran_COMPILER_ID MATCHES "GNU")
-  set(_base_flags "-fno-second-underscore -Wall")
+  set(_base_flags "-fno-second-underscore -Wall -Wno-unused-dummy-argument")
   set(_release_flags "-O3 -funroll-all-loops")
 elseif(CMAKE_Fortran_COMPILER_ID MATCHES "IntelLLVM")
   set(_base_flags "-warn general")

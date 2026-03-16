@@ -69,13 +69,14 @@ c     find smallest i<k such that for all j=i,..,k, m(j) >= eta
 c
 c**********************************************************************
 c
-      subroutine supdate_mu(mumax,mu,nu,j,alpha,beta,anorm,eps1)
+      subroutine supdate_mu(mumax,mu,nu,j,alpha,beta,anorm,
+     c     eps1_aprod,eps1_atprod)
 c     %-----------%
 c     | Arguments |
 c     %-----------%
       implicit none
       integer j
-      real mumax,eps1,anorm
+      real mumax,eps1_aprod,eps1_atprod,anorm
       real mu(*),nu(*),alpha(*),beta(*)
 
 c     %------------%
@@ -97,24 +98,30 @@ c     %--------------------%
       external slapy2
 
       if (j.eq.1) then
-         d = eps1*(slapy2(alpha(j), beta(j)) + alpha(1)) + eps1*anorm
-         mu(1) = eps1/beta(1)
+         d = eps1_aprod*slapy2(alpha(j), beta(j)) +
+     c        eps1_atprod*alpha(1) +
+     c        max(eps1_aprod,eps1_atprod)*anorm
+         mu(1) = max(eps1_aprod,eps1_atprod)/beta(1)
          mumax = abs(mu(1))
       else
          mu(1) = alpha(1)*nu(1)-alpha(j)*mu(1)
-         d = eps1*(slapy2(alpha(j), beta(j)) + alpha(1)) + eps1*anorm
+         d = eps1_aprod*slapy2(alpha(j), beta(j)) +
+     c        eps1_atprod*alpha(1) +
+     c        max(eps1_aprod,eps1_atprod)*anorm
          mu(1) = (mu(1) + sign(d,mu(1))) / beta(j)
          mumax = abs(mu(1))
          do k=2,j-1
             mu(k) = alpha(k)*nu(k) +beta(k-1)*nu(k-1)-alpha(j)*mu(k)
-            d = eps1*(slapy2(alpha(j), beta(j)) +
-     c           slapy2(alpha(k), beta(k-1))) + eps1*anorm
+            d = eps1_aprod*slapy2(alpha(j), beta(j)) +
+     c           eps1_atprod*slapy2(alpha(k), beta(k-1)) +
+     c           max(eps1_aprod,eps1_atprod)*anorm
             mu(k) = (mu(k) + sign(d,mu(k))) / beta(j)
             mumax = max(mumax,abs(mu(k)))
          enddo
          mu(j) = beta(j-1)*nu(j-1)
-         d = eps1*(slapy2(alpha(j), beta(j)) +
-     c        slapy2(alpha(j), beta(j-1))) + eps1*anorm
+         d = eps1_aprod*slapy2(alpha(j), beta(j)) +
+     c        eps1_atprod*slapy2(alpha(j), beta(j-1)) +
+     c        max(eps1_aprod,eps1_atprod)*anorm
          mu(j) = (mu(j) + sign(d,mu(j))) / beta(j)
          mumax = max(mumax,abs(mu(j)))
       endif
@@ -123,13 +130,14 @@ c     %--------------------%
 c
 c**********************************************************************
 c
-      subroutine supdate_nu(numax,mu,nu,j,alpha,beta,anorm,eps1)
+      subroutine supdate_nu(numax,mu,nu,j,alpha,beta,anorm,
+     c     eps1_aprod,eps1_atprod)
 c     %-----------%
 c     | Arguments |
 c     %-----------%
       implicit none
       integer j
-      real numax,eps1,anorm
+      real numax,eps1_aprod,eps1_atprod,anorm
       real mu(*),nu(*),alpha(*),beta(*)
 
 c     %------------%
@@ -154,8 +162,9 @@ c     %--------------------%
          numax = zero
          do k=1,j-1
             nu(k) = beta(k)*mu(k+1) + alpha(k)*mu(k) -beta(j-1)*nu(k)
-            d = eps1*(slapy2(alpha(k),beta(k)) +
-     c           slapy2(alpha(j),beta(j-1))) + eps1*anorm
+            d = eps1_atprod*slapy2(alpha(k),beta(k)) +
+     c           eps1_aprod*slapy2(alpha(j),beta(j-1)) +
+     c           max(eps1_aprod,eps1_atprod)*anorm
             nu(k) = (nu(k) + sign(d,nu(k))) / alpha(j)
             numax = max(numax,abs(nu(k)))
          enddo

@@ -148,16 +148,25 @@ c-------------------- Here begins executable code ---------------------
 
 
 
-      subroutine drefinebounds(n,k,theta,bound,tol,eps34)
+      subroutine drefinebounds(n,k,theta,bound,eps34)
 c
 c     Refine Lanczos error bounds using the gap theorem.
+c     Two-pass algorithm: cluster detection followed by gap refinement.
+c
+c     Pass 1 identifies clusters of Ritz values within eps34*|theta|
+c     of each other. For each cluster, the combined residual and
+c     external gap are used to compute a cluster-level bound.
+c     Cluster members' bounds are set to max(current, cluster bound)
+c     -- never zero, avoiding false convergence of doppelganger Ritz
+c     values when orthogonality is lost.
+c
+c     Pass 2 applies Davis-Kahan gap refinement to individual values.
 c
 c     Input arguments:
 c              n:     smallest dimension of original matrix
 c              k:     number of Ritz values to refine
-c              theta: array of Ritz values
+c              theta: array of Ritz values (sorted descending)
 c              bound: array of unrefined error bounds
-c              tol:   clustering tolerance
 c              eps34: machine epsilon to the power 3/4.
 
 c     %-----------%
@@ -165,13 +174,13 @@ c     | Arguments |
 c     %-----------%
       implicit none
       integer n,k
-      double precision theta(*), bound(*), tol, eps34
+      double precision theta(*), bound(*), eps34
 
 c     %-----------------%
 c     | Local variables |
 c     %-----------------%
-      double precision gap
-      integer i,l
+      double precision gap, r_comb, delta_ext, b_cluster, gl, gr
+      integer i,l,cstart,cend
 
 c     %------------------------------------%
 c     | External Functions and Subroutines |
@@ -181,18 +190,58 @@ c     %------------------------------------%
 
 c-------------------- Here begins executable code ---------------------
       if (k.le.1) return
-      do i=1,k
-         do l=-1,1,2
-            if ((l.eq.1.and.i.lt.k) .or. (l.eq.-1.and.i.gt.1)) then
-               if (abs(theta(i)-theta(i+l)) .lt. eps34*(theta(i))) then
-                  if (bound(i).gt.tol .and. bound(i+l).gt.tol) then
-                     bound(i+l) = dlapy2(bound(i),bound(i+l))
-                     bound(i) = 0d0
-                  endif
-               endif
+
+c     %-----------------------------------------------------------%
+c     | Pass 1: Cluster detection and cluster-level gap theorem   |
+c     %-----------------------------------------------------------%
+      i = 1
+      do while (i.le.k)
+c        Find end of cluster starting at i
+         cstart = i
+         cend = i
+         do while (cend.lt.k)
+            if (abs(theta(cend)-theta(cend+1)) .lt.
+     c           eps34*abs(theta(cend))) then
+               cend = cend + 1
+            else
+               goto 5
             endif
          enddo
+ 5       continue
+         if (cend.gt.cstart) then
+c           Multi-element cluster [cstart..cend]
+c           Combined residual: r_comb = sqrt(sum(bound(l)^2))
+            r_comb = 0d0
+            do l=cstart,cend
+               r_comb = dlapy2(r_comb, bound(l))
+            enddo
+c           External gap: distance to nearest theta outside cluster
+            gl = huge(1d0)
+            gr = huge(1d0)
+            if (cstart.gt.1) then
+               gl = abs(theta(cstart-1) - theta(cstart))
+            endif
+            if (cend.lt.k) then
+               gr = abs(theta(cend) - theta(cend+1))
+            endif
+            delta_ext = min(gl, gr)
+c           Cluster-level bound via gap theorem
+            if (delta_ext.gt.0d0) then
+               b_cluster = r_comb*r_comb / delta_ext
+            else
+               b_cluster = r_comb
+            endif
+c           Set cluster members' bounds (never zero)
+            do l=cstart,cend
+               bound(l) = max(bound(l), b_cluster)
+            enddo
+         endif
+         i = cend + 1
       enddo
+
+c     %-----------------------------------------------------------%
+c     | Pass 2: Davis-Kahan gap refinement                        |
+c     %-----------------------------------------------------------%
       do i=1,k
          if (i.lt.k .or. k.eq.n) then
 c

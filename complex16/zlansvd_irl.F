@@ -141,7 +141,7 @@ c     | Local variables |
 c     %-----------------%
       integer k,i,ibnd,iwrk,ierr,ip,iq,nconv,lwrk,kold,dim,first,last
       integer ialpha,ibeta,ialpha1,ibeta1,ishift,nshft,lapinfo,idx
-      double precision eps,eps34,epsn2,anorm,rnorm,tol
+      double precision eps,eps34,anorm,rnorm,tol
       double precision shift, relgap, deflate_tol
       real t0,t1,t2,t3
       integer st,cnk,wst,wcnk, tid, nt
@@ -175,7 +175,6 @@ c     | Set machine dependent constants |
 c     %---------------------------------%
       eps = dlamch('e')
       eps34 = eps**(3.0/4.0)
-      epsn2 = sqrt(dble(max(m,n)))*eps/2.0
 
 
 c     %--------------------------------%
@@ -248,6 +247,15 @@ c     %---------------------------------------------%
          else
             anorm = max(anorm,work(ialpha1))
          endif
+c     %-------------------------------------------------%
+c     | Ghost singular value detection: if the largest  |
+c     | Ritz value is much larger than ||A||, partial   |
+c     | reorthogonalization has failed.                 |
+c     %-------------------------------------------------%
+         if (dim.gt.5 .and. work(ialpha1).gt.2d0*anorm) then
+            info = -2000
+            goto 50
+         endif
          do i=1,dim
             work(ibnd+i-1) = abs(rnorm*work(ibnd+i-1))
          enddo
@@ -257,10 +265,10 @@ c     | Refine error bounds using the "Gap theorem" |
 c     %---------------------------------------------%
          if (lsame(which,'s')) then
             call drefinebounds(dim,dim,work(ialpha1),work(ibnd),
-     c           epsn2*anorm,eps34)
+     c           eps34)
          else
             call drefinebounds(min(m,n),dim,work(ialpha1),work(ibnd),
-     c           epsn2*anorm,eps34)
+     c           eps34)
          endif
 
 c     %----------------------------------------------------%

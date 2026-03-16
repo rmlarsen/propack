@@ -13,11 +13,11 @@ c
       double precision U1(mmax),V1(nmax)
       double precision Sigma1(kmax),bnd1(kmax)
       double precision U2(mmax),V2(nmax)
-      double precision udiff(mmax), vdiff(nmax),dotprod
+      double precision dotprod
       double precision Sigma2(kmax),bnd2(kmax)
-      double precision norm2,norm1,normd,eps,tol,delta
+      double precision norm2,norm1,eps,tol,delta
       double precision abserr,relerr,maxabserr,maxrelerr
-      integer relidx, absidx, info
+      integer relidx, absidx
 c     Save large arrays in a common block to avoid stack overflow on
 c     certain machines.
       common/cexample/U1,V1,Sigma1,bnd1,U2,V2,Sigma2,bnd2
@@ -98,9 +98,9 @@ c
       absidx=1
       maxrelerr = maxabserr / abs(Sigma1(1))
       relidx=1
-      call testsigma(tol,eps,1,m,n,Sigma1,Sigma2)
+      call testsigma(eps,1,m,n,Sigma1,Sigma2)
       do k=2,k1
-         call testsigma(tol,eps,k,m,n,Sigma1,Sigma2)
+         call testsigma(eps,k,m,n,Sigma1,Sigma2)
          abserr = abs(Sigma1(k)-Sigma2(k))
          relerr = abserr / (abs(Sigma1(k))+abs(Sigma2(k)))
          if (relerr.gt.maxrelerr) then
@@ -205,10 +205,10 @@ c
 
 
 
-      subroutine testsigma(tol,eps,i,m,n,Sigma1,Sigma2)
+      subroutine testsigma(eps,i,m,n,Sigma1,Sigma2)
       implicit none 
       integer i,m,n
-      double precision eps,Sigma1(*),Sigma2(*),errbnd,err,tol
+      double precision eps,Sigma1(*),Sigma2(*),errbnd,err
 
       err = abs(Sigma1(i)-Sigma2(i))
       errbnd = 10*max(m,n)*eps*Sigma1(1)

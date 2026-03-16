@@ -126,7 +126,7 @@ c     %-----------------%
 c     | Local variables |
 c     %-----------------%
       integer i,j,dj,jold,ibnd,ib,ib1,iwrk,ierr,ip,iq,neig,lwrk,lapinfo
-      double precision eps,eps34,epsn2,anorm,rnorm,tol
+      double precision eps,eps34,anorm,rnorm,tol
       real t0,t1,t2,t3
 
 c     %----------------------%
@@ -155,7 +155,6 @@ c     | Set machine dependent constants |
 c     %---------------------------------%
       eps = dlamch('e')
       eps34 = eps**(3.0/4.0)
-      epsn2 = sqrt(dble(max(m,n)))*eps/2.0
 
 
 c     %--------------------------------%
@@ -225,6 +224,15 @@ c     %---------------------------------------------%
          else
             anorm = max(anorm,work(ib1))
          endif
+c     %-------------------------------------------------%
+c     | Ghost singular value detection: if the largest  |
+c     | Ritz value is much larger than ||A||, partial   |
+c     | reorthogonalization has failed.                 |
+c     %-------------------------------------------------%
+         if (j.gt.5 .and. work(ib1).gt.2d0*anorm) then
+            info = -2000
+            goto 50
+         endif
          do i=1,j
             work(ibnd+i-1) = abs(rnorm*work(ibnd+i-1))
          enddo
@@ -232,8 +240,7 @@ c     %---------------------------------------------%
 c     %---------------------------------------------%
 c     | Refine error bounds using the "Gap theorem" |
 c     %---------------------------------------------%
-         call drefinebounds(min(m,n),j,work(ib1),work(ibnd),
-     c        epsn2*anorm,eps34)
+         call drefinebounds(min(m,n),j,work(ib1),work(ibnd),eps34)
 
 c     %----------------------------------------------------%
 c     | Determine the number of converged singular values  |
