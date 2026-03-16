@@ -383,10 +383,25 @@ if(PROPACK_BUILD_CXX_API AND PROPACK_BUILD_BENCHMARKS)
 endif()
 
 # ---------------------------------------------------------------------------
+# Matrix Market benchmark (Eigen-based, no Google Benchmark dependency)
+# ---------------------------------------------------------------------------
+if(PROPACK_BUILD_CXX_API AND PROPACK_BUILD_BENCHMARKS AND PROPACK_BUILD_DOUBLE)
+  find_package(Eigen3 QUIET)
+  if(Eigen3_FOUND)
+    add_executable(propack_bench_mtx tests/bench_mtx.cpp)
+    target_link_libraries(propack_bench_mtx PRIVATE dpropack Eigen3::Eigen)
+    target_include_directories(propack_bench_mtx PRIVATE
+      ${CMAKE_CURRENT_SOURCE_DIR}/include)
+  else()
+    message(STATUS "Eigen3 not found — skipping Matrix Market benchmark")
+  endif()
+endif()
+
+# ---------------------------------------------------------------------------
 # Install C++ header
 # ---------------------------------------------------------------------------
 if(PROPACK_BUILD_CXX_API)
-  install(FILES include/propack.hpp
+  install(FILES include/propack.hpp include/mmio.hpp
     DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 endif()
 

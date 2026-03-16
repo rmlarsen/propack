@@ -108,6 +108,9 @@ c
       soption(1) = sqrt(eps)
       soption(2) = eps**(3.0/4.0)
       soption(3) = 0.0
+      soption(4) = 0
+      soption(5) = 0
+      soption(6) = 0
 c
 c     Compute the neig largest singular values
 c
