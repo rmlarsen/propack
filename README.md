@@ -126,6 +126,25 @@ Or use the helper script for formatted Markdown table output:
 ./run_benchmarks.sh build
 ```
 
+### SuiteSparse matrix benchmarks
+
+Download the 20 SuiteSparse test matrices used in the propack++ paper:
+
+```sh
+./paper/download_matrices.sh paper/matrices
+```
+
+Then run the Matrix Market benchmark (requires Eigen3):
+
+```sh
+cmake -B build -DPROPACK_BUILD_BENCHMARKS=ON
+cmake --build build
+./build/propack_bench_mtx paper/matrices 10 50
+```
+
+This benchmarks both `lansvd` and `lansvd_irl` with CGS and MGS on all
+downloaded matrices, outputting JSON results to stdout.
+
 ## Using PROPACK in your project
 
 After installing PROPACK (`cmake --install build`), use it from another CMake
@@ -154,6 +173,34 @@ SUBROUTINE APROD(TRANSA, M, N, X, Y, DPARM, IPARM)
 
 See the source files `<precision>/<X>lansvd.F` and `<precision>/<X>lansvd_irl.F`
 for full parameter documentation.
+
+### Option arrays
+
+Algorithm behavior is controlled via `DOPTION` and `IOPTION` arrays:
+
+| Entry | Default | Description |
+|-------|---------|-------------|
+| `doption(1)` | `sqrt(eps)` | `delta` — level of orthogonality to maintain |
+| `doption(2)` | `eps^(3/4)` | `eta` — reorthogonalization purge threshold |
+| `doption(3)` | `0` (auto) | `anorm` — estimate of ‖A‖ |
+| `doption(4)` | `1e-3` | min relative gap between shifts (IRL only) |
+| `doption(5)` | `0` (auto) | `eps1_aprod` — rounding error for A*v (auto: `5*sqrt(n)*eps`) |
+| `doption(6)` | `0` (auto) | `eps1_atprod` — rounding error for A'*u (auto: `5*sqrt(m)*eps`) |
+| `ioption(1)` | `0` | `MGS` — use modified Gram-Schmidt (0=CGS, 1=MGS) |
+| `ioption(2)` | `1` | `ELR` — extended local reorthogonalization |
+
+**Important:** `doption` must have at least 6 elements, all initialized.
+Set entries 5-6 to 0 for automatic (recommended) values.
+
+### Error codes
+
+| `INFO` value | Meaning |
+|-------------|---------|
+| `0` | Success — all requested singular triplets converged |
+| `> 0` | An invariant subspace of dimension `INFO` was found |
+| `< 0, > -1000` | Only `|INFO|` singular triplets converged |
+| `-1000` | LAPACK bidiagonal SVD failed |
+| `-2000` | Ghost singular value detected — partial reorthogonalization failed |
 
 ## C++ API
 
