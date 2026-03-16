@@ -112,6 +112,9 @@ c
       doption(1) = sqrt(eps)
       doption(2) = eps**(3.0/4.0)
       doption(3) = dzero
+      doption(4) = 0
+      doption(5) = 0
+      doption(6) = 0
 c
 c     Compute the neig largest singular values
 c
