@@ -156,69 +156,71 @@ void propack_clansvd_irl(char which, char jobu, char jobv,
 template<typename Scalar>
 inline void trampoline(char t, int m, int n,
                        const Scalar* x, Scalar* y, void* ud) {
-    (*static_cast<AprodFn<Scalar>*>(ud))(t, m, n, x, y);
+    (*static_cast<const AprodFn<Scalar>*>(ud))(t, m, n, x, y);
+}
+
+template<typename Scalar>
+inline void* aprod_userdata(const AprodFn<Scalar>& fn) {
+    // Fortran wrapper takes void* userdata; trampoline restores const-ness.
+    return const_cast<void*>(static_cast<const void*>(&fn));
 }
 
 // ============================================================================
-// call_lansvd — dispatch to correct Fortran wrapper via if constexpr
+// call_lansvd / call_lansvd_irl — dispatch to correct Fortran wrapper
 // ============================================================================
 
 template<typename Scalar>
 void call_lansvd(char jobu, char jobv, int m, int n, int k, int kmax,
-                 AprodFn<Scalar>& fn,
+                 const AprodFn<Scalar>& fn,
                  Scalar* U, int ldu, real_type_t<Scalar>* sigma,
                  real_type_t<Scalar>* bnd,
                  Scalar* V, int ldv, real_type_t<Scalar> tolin,
                  const real_type_t<Scalar>* doption, const int* ioption,
                  int* info) {
-    using S = Scalar;
-    if constexpr (std::is_same_v<S, double>)
-        propack_dlansvd(jobu, jobv, m, n, k, kmax,
-                        trampoline<S>, &fn, U, ldu, sigma, bnd, V, ldv,
-                        tolin, doption, ioption, info);
-    else if constexpr (std::is_same_v<S, float>)
-        propack_slansvd(jobu, jobv, m, n, k, kmax,
-                        trampoline<S>, &fn, U, ldu, sigma, bnd, V, ldv,
-                        tolin, doption, ioption, info);
-    else if constexpr (std::is_same_v<S, std::complex<double>>)
-        propack_zlansvd(jobu, jobv, m, n, k, kmax,
-                        trampoline<S>, &fn, U, ldu, sigma, bnd, V, ldv,
-                        tolin, doption, ioption, info);
-    else if constexpr (std::is_same_v<S, std::complex<float>>)
-        propack_clansvd(jobu, jobv, m, n, k, kmax,
-                        trampoline<S>, &fn, U, ldu, sigma, bnd, V, ldv,
-                        tolin, doption, ioption, info);
+    void* ud = aprod_userdata(fn);
+    if constexpr (std::is_same_v<Scalar, double>)
+        propack_dlansvd(jobu, jobv, m, n, k, kmax, trampoline<Scalar>, ud,
+                        U, ldu, sigma, bnd, V, ldv, tolin,
+                        doption, ioption, info);
+    else if constexpr (std::is_same_v<Scalar, float>)
+        propack_slansvd(jobu, jobv, m, n, k, kmax, trampoline<Scalar>, ud,
+                        U, ldu, sigma, bnd, V, ldv, tolin,
+                        doption, ioption, info);
+    else if constexpr (std::is_same_v<Scalar, std::complex<double>>)
+        propack_zlansvd(jobu, jobv, m, n, k, kmax, trampoline<Scalar>, ud,
+                        U, ldu, sigma, bnd, V, ldv, tolin,
+                        doption, ioption, info);
+    else if constexpr (std::is_same_v<Scalar, std::complex<float>>)
+        propack_clansvd(jobu, jobv, m, n, k, kmax, trampoline<Scalar>, ud,
+                        U, ldu, sigma, bnd, V, ldv, tolin,
+                        doption, ioption, info);
 }
-
-// ============================================================================
-// call_lansvd_irl — dispatch to correct Fortran wrapper via if constexpr
-// ============================================================================
 
 template<typename Scalar>
 void call_lansvd_irl(char which, char jobu, char jobv,
                      int m, int n, int dim, int p, int nwanted, int maxiter,
-                     AprodFn<Scalar>& fn,
+                     const AprodFn<Scalar>& fn,
                      Scalar* U, int ldu, real_type_t<Scalar>* sigma,
                      real_type_t<Scalar>* bnd,
                      Scalar* V, int ldv, real_type_t<Scalar> tolin,
                      const real_type_t<Scalar>* doption, const int* ioption,
                      int* info) {
-    using S = Scalar;
-    if constexpr (std::is_same_v<S, double>)
+    void* ud = aprod_userdata(fn);
+    if constexpr (std::is_same_v<Scalar, double>)
         propack_dlansvd_irl(which, jobu, jobv, m, n, dim, p, nwanted, maxiter,
-                            trampoline<S>, &fn, U, ldu, sigma, bnd, V, ldv,
+                            trampoline<Scalar>, ud, U, ldu, sigma, bnd, V, ldv,
                             tolin, doption, ioption, info);
-    else if constexpr (std::is_same_v<S, float>)
+    else if constexpr (std::is_same_v<Scalar, float>)
         propack_slansvd_irl(which, jobu, jobv, m, n, dim, p, nwanted, maxiter,
-                            trampoline<S>, &fn, U, ldu, sigma, bnd, V, ldv,
+                            trampoline<Scalar>, ud, U, ldu, sigma, bnd, V, ldv,
                             tolin, doption, ioption, info);
-    else if constexpr (std::is_same_v<S, std::complex<double>>)
+    else if constexpr (std::is_same_v<Scalar, std::complex<double>>)
         propack_zlansvd_irl(which, jobu, jobv, m, n, dim, p, nwanted, maxiter,
-                            trampoline<S>, &fn, U, ldu, sigma, bnd, V, ldv,
+                            trampoline<Scalar>, ud, U, ldu, sigma, bnd, V, ldv,
                             tolin, doption, ioption, info);
-    else if constexpr (std::is_same_v<S, std::complex<float>>)
+    else if constexpr (std::is_same_v<Scalar, std::complex<float>>)
         propack_clansvd_irl(which, jobu, jobv, m, n, dim, p, nwanted, maxiter,
-                            trampoline<S>, &fn, U, ldu, sigma, bnd, V, ldv,
+                            trampoline<Scalar>, ud, U, ldu, sigma, bnd, V, ldv,
                             tolin, doption, ioption, info);
 }
 
@@ -231,7 +233,7 @@ inline void fill_doption(Real* doption, const Options& opts) {
     doption[0] = static_cast<Real>(opts.delta);
     doption[1] = static_cast<Real>(opts.eta);
     doption[2] = static_cast<Real>(opts.anorm);
-    doption[3] = Real(0);  // unused by lansvd (only by lansvd_irl)
+    doption[3] = Real(0);
     doption[4] = static_cast<Real>(opts.eps1_aprod);
     doption[5] = static_cast<Real>(opts.eps1_atprod);
 }
@@ -240,12 +242,44 @@ template<typename Real>
 inline void fill_doption_irl(Real* doption, const IRLOptions& opts) {
     fill_doption(doption, opts);
     doption[3] = static_cast<Real>(opts.min_relgap);
-    // doption[4] and doption[5] already set by fill_doption
 }
 
 inline void fill_ioption(int* ioption, const Options& opts) {
     ioption[0] = opts.use_mgs ? 1 : 0;
     ioption[1] = opts.extended_local_reorth ? 1 : 0;
+}
+
+// ============================================================================
+// Result packing — shared by lansvd and lansvd_irl
+//
+// U_buf is column-major m x (kmax+1); V_buf is column-major n x kmax.
+// The leading m*k (resp. n*k) elements are exactly the first k columns,
+// so we can shrink-then-move instead of copying column-by-column.
+// ============================================================================
+
+template<typename Scalar, typename Real>
+SVDResult<Scalar> pack_result(int m, int n, int k, int info,
+                              std::vector<Scalar>&& U_buf,
+                              std::vector<Scalar>&& V_buf,
+                              std::vector<Real>&& sigma,
+                              std::vector<Real>&& bnd,
+                              bool compute_u, bool compute_v) {
+    SVDResult<Scalar> r;
+    r.m = m;
+    r.n = n;
+    r.k = k;
+    r.info = info;
+    r.sigma = std::move(sigma);
+    r.bnd = std::move(bnd);
+    if (compute_u) {
+        U_buf.resize(static_cast<size_t>(m) * k);
+        r.U = std::move(U_buf);
+    }
+    if (compute_v) {
+        V_buf.resize(static_cast<size_t>(n) * k);
+        r.V = std::move(V_buf);
+    }
+    return r;
 }
 
 }  // namespace detail
@@ -257,7 +291,7 @@ inline void fill_ioption(int* ioption, const Options& opts) {
 template<typename Scalar>
 [[nodiscard]] SVDResult<Scalar> lansvd(
         int m, int n, int k, int kmax,
-        AprodFn<Scalar> aprod,
+        const AprodFn<Scalar>& aprod,
         bool compute_u = true, bool compute_v = true,
         double tol = 0.0,
         const Options& opts = {}) {
@@ -266,7 +300,6 @@ template<typename Scalar>
     char jobu = compute_u ? 'Y' : 'N';
     char jobv = compute_v ? 'Y' : 'N';
 
-    // Allocate Fortran-sized buffers (kmax+1 columns for U, kmax for V)
     std::vector<Scalar> U_buf(static_cast<size_t>(m) * (kmax + 1), Scalar(0));
     std::vector<Scalar> V_buf(static_cast<size_t>(n) * kmax, Scalar(0));
     std::vector<Real> sigma(k);
@@ -284,30 +317,11 @@ template<typename Scalar>
                         static_cast<Real>(tol),
                         doption, ioption, &info);
 
-    SVDResult<Scalar> result;
-    result.m = m;
-    result.n = n;
-    result.k = k;
-    result.info = info;
-    result.sigma = std::move(sigma);
-    result.bnd = std::move(bnd);
-
-    if (compute_u) {
-        result.U.resize(static_cast<size_t>(m) * k);
-        for (int j = 0; j < k; ++j)
-            std::copy(U_buf.data() + static_cast<size_t>(j) * m,
-                      U_buf.data() + static_cast<size_t>(j) * m + m,
-                      result.U.data() + static_cast<size_t>(j) * m);
-    }
-    if (compute_v) {
-        result.V.resize(static_cast<size_t>(n) * k);
-        for (int j = 0; j < k; ++j)
-            std::copy(V_buf.data() + static_cast<size_t>(j) * n,
-                      V_buf.data() + static_cast<size_t>(j) * n + n,
-                      result.V.data() + static_cast<size_t>(j) * n);
-    }
-
-    return result;
+    return detail::pack_result<Scalar>(
+        m, n, k, info,
+        std::move(U_buf), std::move(V_buf),
+        std::move(sigma), std::move(bnd),
+        compute_u, compute_v);
 }
 
 // ============================================================================
@@ -318,7 +332,7 @@ template<typename Scalar>
 [[nodiscard]] SVDResult<Scalar> lansvd_irl(
         char which, int m, int n,
         int nwanted, int dim, int p, int maxiter,
-        AprodFn<Scalar> aprod,
+        const AprodFn<Scalar>& aprod,
         bool compute_u = true, bool compute_v = true,
         double tol = 0.0,
         const IRLOptions& opts = {}) {
@@ -327,7 +341,6 @@ template<typename Scalar>
     char jobu = compute_u ? 'Y' : 'N';
     char jobv = compute_v ? 'Y' : 'N';
 
-    // Allocate Fortran-sized buffers
     std::vector<Scalar> U_buf(static_cast<size_t>(m) * (dim + 1), Scalar(0));
     std::vector<Scalar> V_buf(static_cast<size_t>(n) * dim, Scalar(0));
     std::vector<Real> sigma(nwanted);
@@ -345,30 +358,11 @@ template<typename Scalar>
                             static_cast<Real>(tol),
                             doption, ioption, &info);
 
-    SVDResult<Scalar> result;
-    result.m = m;
-    result.n = n;
-    result.k = nwanted;
-    result.info = info;
-    result.sigma = std::move(sigma);
-    result.bnd = std::move(bnd);
-
-    if (compute_u) {
-        result.U.resize(static_cast<size_t>(m) * nwanted);
-        for (int j = 0; j < nwanted; ++j)
-            std::copy(U_buf.data() + static_cast<size_t>(j) * m,
-                      U_buf.data() + static_cast<size_t>(j) * m + m,
-                      result.U.data() + static_cast<size_t>(j) * m);
-    }
-    if (compute_v) {
-        result.V.resize(static_cast<size_t>(n) * nwanted);
-        for (int j = 0; j < nwanted; ++j)
-            std::copy(V_buf.data() + static_cast<size_t>(j) * n,
-                      V_buf.data() + static_cast<size_t>(j) * n + n,
-                      result.V.data() + static_cast<size_t>(j) * n);
-    }
-
-    return result;
+    return detail::pack_result<Scalar>(
+        m, n, nwanted, info,
+        std::move(U_buf), std::move(V_buf),
+        std::move(sigma), std::move(bnd),
+        compute_u, compute_v);
 }
 
 }  // namespace propack
