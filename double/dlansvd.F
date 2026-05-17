@@ -119,15 +119,15 @@ c     %-----------------%
 c     %----------------------%
 c     | External Subroutines |
 c     %----------------------%
-      external dzero,izero,dcopy,daxpy,dbdsqr,dgemm
+      external dzero,dcopy,dbdsqr
 
 c     %--------------------%
 c     | External Functions |
 c     %--------------------%
       logical lsame
-      double precision dlamch,pdnrm2,ddot,dlapy2
-      external pdnrm2,ddot,lsame
-      external dlamch,dlapy2
+      double precision dlamch,pdnrm2
+      external pdnrm2,lsame
+      external dlamch
 
 c-------------------- Here begins executable code ---------------------
 

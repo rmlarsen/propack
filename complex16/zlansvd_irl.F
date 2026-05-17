@@ -149,7 +149,7 @@ c     %-----------------%
 c     %----------------------%
 c     | External Subroutines |
 c     %----------------------%
-      external dzero,izero,dcopy,daxpy,dbdsqr
+      external dzero,dcopy,dbdsqr
 
 c     %--------------------%
 c     | External Functions |

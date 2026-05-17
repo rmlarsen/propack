@@ -94,8 +94,8 @@ c     %-----------------%
 c     %--------------------%
 c     | External Functions |
 c     %--------------------%
-      double precision dlamch,dlapy2
-      external dlamch,dlapy2
+      double precision dlapy2
+      external dlapy2
 
       if (j.eq.1) then
          d = eps1_aprod*dlapy2(alpha(j), beta(j)) +
@@ -156,8 +156,8 @@ c     %-----------------%
 c     %--------------------%
 c     | External Functions |
 c     %--------------------%
-      double precision dlamch,dlapy2
-      external dlamch,dlapy2
+      double precision dlapy2
+      external dlapy2
 
       if (j.gt.1) then
          numax = zero

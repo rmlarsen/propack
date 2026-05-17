@@ -135,8 +135,8 @@ c     %-----------------%
 c     %----------------------%
 c     | External Subroutines |
 c     %----------------------%
-      external szero,izero,pscopy,pcaxpy
-      external cgetu0,creorth,csafescal,czero,pccopy,pcsaxpy
+      external szero,pcaxpy
+      external cgetu0,creorth,csafescal,czero,pcsaxpy
       external scompute_int,supdate_nu,supdate_mu
 
 c     %--------------------%

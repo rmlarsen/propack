@@ -27,7 +27,7 @@ c     %-----------------%
 c     %----------------------%
 c     | External Subroutines |
 c     %----------------------%
-      external dscal,dlascl
+      external pdscal,dlascl
 
 c     %--------------------%
 c     | External Functions |

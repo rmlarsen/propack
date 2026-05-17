@@ -132,7 +132,7 @@ c     %-----------------%
 c     %----------------------%
 c     | External Subroutines |
 c     %----------------------%
-      external sgetu0,sreorth,ssafescal,szero,izero,pscopy,psaxpy
+      external sgetu0,sreorth,ssafescal,szero,psaxpy
       external scompute_int,supdate_nu,supdate_mu
 
 c     %--------------------%

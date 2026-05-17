@@ -27,7 +27,7 @@ c     %------------%
 c     | Parameters |
 c     %------------%
       double precision kappa
-      parameter(kappa = 0.717)
+      parameter(kappa = 0.717d0)
 
 c     %-----------------%
 c     | Local variables |

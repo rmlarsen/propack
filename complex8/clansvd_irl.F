@@ -148,7 +148,7 @@ c     %-----------------%
 c     %----------------------%
 c     | External Subroutines |
 c     %----------------------%
-      external szero,izero,scopy,sbdsqr
+      external szero,scopy,sbdsqr
 
 c     %--------------------%
 c     | External Functions |
