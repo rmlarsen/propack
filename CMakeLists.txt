@@ -139,6 +139,7 @@ function(_add_propack_variant PREFIX TYPE_DIR REAL_DIR REAL_PREFIX)
   set(_lib_name ${PREFIX}propack)
   add_library(${_lib_name} ${_own_sources} ${_real_sources})
   add_library(PROPACK::${_lib_name} ALIAS ${_lib_name})
+  set_property(GLOBAL APPEND PROPERTY PROPACK_VARIANT_TARGETS ${_lib_name})
 
   target_include_directories(${_lib_name} PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/${TYPE_DIR}
@@ -340,17 +341,19 @@ endif()
 # ---------------------------------------------------------------------------
 # C++ API unit tests (GTest)
 # ---------------------------------------------------------------------------
-if(PROPACK_BUILD_CXX_API AND PROPACK_BUILD_TESTING)
+if(PROPACK_BUILD_CXX_API AND (PROPACK_BUILD_TESTING OR PROPACK_BUILD_BENCHMARKS))
   enable_language(CXX)
   set(CMAKE_CXX_STANDARD 17)
   set(CMAKE_CXX_STANDARD_REQUIRED ON)
+  get_property(_propack_variants GLOBAL PROPERTY PROPACK_VARIANT_TARGETS)
+endif()
+
+if(PROPACK_BUILD_CXX_API AND PROPACK_BUILD_TESTING)
   find_package(GTest QUIET)
   if(GTest_FOUND)
     add_executable(propack_cxx_test tests/test_propack_cxx.cpp)
     target_link_libraries(propack_cxx_test PRIVATE
-      GTest::gtest_main
-      dpropack spropack zpropack cpropack
-    )
+      GTest::gtest_main ${_propack_variants})
     include(GoogleTest)
     gtest_discover_tests(propack_cxx_test)
   else()
@@ -362,15 +365,12 @@ endif()
 # C++ API benchmarks (Google Benchmark)
 # ---------------------------------------------------------------------------
 if(PROPACK_BUILD_CXX_API AND PROPACK_BUILD_BENCHMARKS)
-  enable_language(CXX)
-  set(CMAKE_CXX_STANDARD 17)
-  set(CMAKE_CXX_STANDARD_REQUIRED ON)
   find_package(benchmark QUIET)
   if(benchmark_FOUND)
     add_executable(propack_cxx_benchmark tests/bench_propack_cxx.cpp)
     target_link_libraries(propack_cxx_benchmark PRIVATE
       benchmark::benchmark benchmark::benchmark_main
-      dpropack spropack zpropack cpropack)
+      ${_propack_variants})
     if(PROPACK_BUILD_TESTING)
       add_test(NAME propack_cxx_benchmark_run
         COMMAND propack_cxx_benchmark --benchmark_min_time=0.1s)

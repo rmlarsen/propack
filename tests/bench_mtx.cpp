@@ -59,7 +59,6 @@ void print_json(const std::vector<BenchResult>& results) {
   std::cout << "]\n";
 }
 
-// Sparse matrix-vector product callback for Fortran PROPACK
 struct SparseAprod {
   const Eigen::SparseMatrix<double>& A;
 
@@ -77,56 +76,60 @@ struct SparseAprod {
   }
 };
 
+template <typename Warmup, typename Timed>
+BenchResult time_runs(const Eigen::SparseMatrix<double>& A,
+                      const std::string& name, const std::string& algorithm,
+                      int k, Warmup&& warmup, Timed&& timed) {
+  int m = static_cast<int>(A.rows());
+  int n = static_cast<int>(A.cols());
+
+  warmup();
+
+  int nruns = (m < 10000 && n < 10000) ? 3 : 1;
+  double total_time = 0;
+  propack::SVDResult<double> result;
+  for (int run = 0; run < nruns; ++run) {
+    auto t0 = std::chrono::high_resolution_clock::now();
+    result = timed();
+    auto t1 = std::chrono::high_resolution_clock::now();
+    total_time += std::chrono::duration<double>(t1 - t0).count();
+  }
+
+  BenchResult br;
+  br.matrix = name;
+  br.algorithm = algorithm;
+  br.k = k;
+  br.m = m;
+  br.n = n;
+  br.nnz = A.nonZeros();
+  br.nconv = (result.info < 0) ? -result.info : k;
+  br.time_s = total_time / nruns;
+  br.max_sigma = result.sigma.empty() ? 0 : result.sigma.front();
+  br.min_sigma = result.sigma.empty() ? 0 : result.sigma.back();
+  return br;
+}
+
 BenchResult run_lansvd(const Eigen::SparseMatrix<double>& A,
                        const std::string& name, int k, bool use_mgs) {
   int m = static_cast<int>(A.rows());
   int n = static_cast<int>(A.cols());
   int kmax = std::min(std::min(m, n) - 1, std::max(10 * k + 100, k + 500));
 
-  SparseAprod aprod_obj{A};
-  propack::AprodFn<double> aprod = [&](char t, int mm, int nn, const double* x,
-                                       double* y) {
-    aprod_obj(t, mm, nn, x, y);
-  };
-
+  propack::AprodFn<double> aprod = SparseAprod{A};
   propack::Options opts;
   opts.use_mgs = use_mgs;
 
-  // Warm up
-  auto warmup = propack::lansvd<double>(m, n, std::min(k, 5),
-                                        std::min(kmax, 50), aprod,
-                                        true, true, 0.0, opts);
-
-  // Timed run
-  int nruns = (m < 10000 && n < 10000) ? 3 : 1;
-  double total_time = 0;
-  propack::SVDResult<double> result;
-  for (int run = 0; run < nruns; ++run) {
-    auto t0 = std::chrono::high_resolution_clock::now();
-    result = propack::lansvd<double>(m, n, k, kmax, aprod,
-                                     true, true, 0.0, opts);
-    auto t1 = std::chrono::high_resolution_clock::now();
-    total_time += std::chrono::duration<double>(t1 - t0).count();
-  }
-
-  int nconv = (result.info >= 0) ? k : -result.info;
-  if (result.info > 0) nconv = k;  // invariant subspace found
-
-  std::string gs_tag = use_mgs ? "_mgs" : "_cgs";
-  BenchResult br;
-  br.matrix = name;
-  br.algorithm = "fortran_lansvd" + gs_tag;
-  br.k = k;
-  br.m = m;
-  br.n = n;
-  br.nnz = A.nonZeros();
-  br.nconv = nconv;
-  br.time_s = total_time / nruns;
-  br.max_sigma =
-      result.sigma.size() > 0 ? result.sigma[0] : 0;
-  br.min_sigma =
-      result.sigma.size() > 0 ? result.sigma[result.sigma.size() - 1] : 0;
-  return br;
+  return time_runs(
+      A, name, std::string("fortran_lansvd") + (use_mgs ? "_mgs" : "_cgs"), k,
+      [&] {
+        (void)propack::lansvd<double>(m, n, std::min(k, 5),
+                                      std::min(kmax, 50), aprod,
+                                      false, false, 0.0, opts);
+      },
+      [&] {
+        return propack::lansvd<double>(m, n, k, kmax, aprod,
+                                       true, true, 0.0, opts);
+      });
 }
 
 BenchResult run_lansvd_irl(const Eigen::SparseMatrix<double>& A,
@@ -140,50 +143,22 @@ BenchResult run_lansvd_irl(const Eigen::SparseMatrix<double>& A,
     dim = k + p + 2;
   }
 
-  SparseAprod aprod_obj{A};
-  propack::AprodFn<double> aprod = [&](char t, int mm, int nn, const double* x,
-                                       double* y) {
-    aprod_obj(t, mm, nn, x, y);
-  };
-
+  propack::AprodFn<double> aprod = SparseAprod{A};
   propack::IRLOptions opts;
   opts.use_mgs = use_mgs;
 
-  // Warm up
-  auto warmup = propack::lansvd_irl<double>(
-      'L', m, n, std::min(k, 5), std::min(dim, std::min(k, 5) + 20),
-      std::min(p, 10), 50, aprod, true, true, 0.0, opts);
-
-  // Timed run
-  int nruns = (m < 10000 && n < 10000) ? 3 : 1;
-  double total_time = 0;
-  propack::SVDResult<double> result;
-  for (int run = 0; run < nruns; ++run) {
-    auto t0 = std::chrono::high_resolution_clock::now();
-    result = propack::lansvd_irl<double>('L', m, n, k, dim, p, 500, aprod,
-                                         true, true, 0.0, opts);
-    auto t1 = std::chrono::high_resolution_clock::now();
-    total_time += std::chrono::duration<double>(t1 - t0).count();
-  }
-
-  int nconv = (result.info >= 0) ? k : -result.info;
-  if (result.info > 0) nconv = k;
-
-  std::string gs_tag = use_mgs ? "_mgs" : "_cgs";
-  BenchResult br;
-  br.matrix = name;
-  br.algorithm = "fortran_lansvd_irl" + gs_tag;
-  br.k = k;
-  br.m = m;
-  br.n = n;
-  br.nnz = A.nonZeros();
-  br.nconv = nconv;
-  br.time_s = total_time / nruns;
-  br.max_sigma =
-      result.sigma.size() > 0 ? result.sigma[0] : 0;
-  br.min_sigma =
-      result.sigma.size() > 0 ? result.sigma[result.sigma.size() - 1] : 0;
-  return br;
+  return time_runs(
+      A, name,
+      std::string("fortran_lansvd_irl") + (use_mgs ? "_mgs" : "_cgs"), k,
+      [&] {
+        (void)propack::lansvd_irl<double>(
+            'L', m, n, std::min(k, 5), std::min(dim, std::min(k, 5) + 20),
+            std::min(p, 10), 50, aprod, false, false, 0.0, opts);
+      },
+      [&] {
+        return propack::lansvd_irl<double>('L', m, n, k, dim, p, 500, aprod,
+                                           true, true, 0.0, opts);
+      });
 }
 
 int main(int argc, char* argv[]) {
