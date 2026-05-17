@@ -131,7 +131,7 @@ c     %-----------------%
 c     %----------------------%
 c     | External Subroutines |
 c     %----------------------%
-      external dgetu0,dreorth,dsafescal,dzero,izero,pdcopy,pdaxpy
+      external dgetu0,dreorth,dsafescal,dzero,pdaxpy
       external dcompute_int,dupdate_nu,dupdate_mu
 
 c     %--------------------%

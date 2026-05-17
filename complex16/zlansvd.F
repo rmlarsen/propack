@@ -132,7 +132,7 @@ c     %-----------------%
 c     %----------------------%
 c     | External Subroutines |
 c     %----------------------%
-      external dzero,izero,dcopy,dbdsqr
+      external dzero,dcopy,dbdsqr
       external zzero,zcopy
 
 c     %--------------------%

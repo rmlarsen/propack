@@ -134,8 +134,8 @@ c     %-----------------%
 c     %----------------------%
 c     | External Subroutines |
 c     %----------------------%
-      external dzero,izero,pdcopy,pzaxpy
-      external zgetu0,zreorth,zsafescal,zzero,pzcopy,pzdaxpy
+      external dzero,pzaxpy
+      external zgetu0,zreorth,zsafescal,zzero,pzdaxpy
       external dcompute_int,dupdate_nu,dupdate_mu
 
 c     %--------------------%
