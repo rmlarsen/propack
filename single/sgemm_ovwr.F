@@ -20,11 +20,7 @@ c
          call sgemm(transa,'N',m,blocksize,k,alpha,A,lda,
      c              B(1,i),ldb,0.0,work,m)
          if (beta.eq.0.0) then
-            do j=0,blocksize-1
-               do l=1,m
-                  B(l,i+j) = work(j*m+l)
-               enddo
-            enddo
+            call slacpy('A',m,blocksize,work,m,B(1,i),ldb)
          else
             do j=0,blocksize-1
                do l=1,m
@@ -36,11 +32,7 @@ c
       call sgemm(transa,'N',m,n-i+1,k,alpha,A,lda,
      c           B(1,i),ldb,0.0,work,m)
       if (beta.eq.0.0) then
-         do j=0,n-i
-            do l=1,m
-               B(l,i+j)  = work(j*m+l)
-            enddo
-         enddo
+         call slacpy('A',m,n-i+1,work,m,B(1,i),ldb)
       else
          do j=0,n-i
             do l=1,m
@@ -69,21 +61,13 @@ c
       do i=1,m-blocksize+1,blocksize
          call sgemm('n',transb,blocksize,n,k,alpha,A(i,1),lda,
      c              B,ldb,0.0,work,blocksize)
-         do j=0,n-1
-            do l=0,blocksize-1
-               A(i+l,j+1) = work(j*blocksize+1+l)
-            enddo
-         enddo
+         call slacpy('A',blocksize,n,work,blocksize,A(i,1),lda)
       enddo
       blocksize = m-i+1
       if (blocksize.le.0) return
       call sgemm('n',transb,blocksize,n,k,alpha,A(i,1),lda,
      c           B,ldb,0.0,work,blocksize)
-      do j=0,n-1
-         do l=0,blocksize-1
-            A(i+l,j+1) = work(j*blocksize+1+l)
-         enddo
-      enddo
+      call slacpy('A',blocksize,n,work,blocksize,A(i,1),lda)
       return
       end
 
