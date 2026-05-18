@@ -120,10 +120,9 @@ c-------------------- Here begins executable code ---------------------
          e(i) = sn*d(i+1)
          d(i+1) = cs*d(i+1)
          if (lsame(jobq,'Y')) then
-            do j=1,i
-               Qt(i+1,j) = -sn*Qt(i,j)
-               Qt(i,j) = cs*Qt(i,j)
-            enddo
+c           Row i+1 of Qt is still the identity row (zero in cols 1..i)
+c           so srot reproduces the explicit loop exactly.
+            call srot(i, Qt(i,1), ldq, Qt(i+1,1), ldq, cs, sn)
             Qt(i,i+1) = sn
             Qt(i+1,i+1) = cs
          endif
@@ -135,10 +134,7 @@ c-------------------- Here begins executable code ---------------------
          c1 = sn
          c2 = cs
          if (lsame(jobq,'Y')) then
-            do j=1,n
-               Qt(n+1,j) = -sn*Qt(n,j)
-               Qt(n,j) = cs*Qt(n,j)
-            enddo
+            call srot(n, Qt(n,1), ldq, Qt(n+1,1), ldq, cs, sn)
             Qt(n,n+1) = sn
             Qt(n+1,n+1) = cs
          endif
