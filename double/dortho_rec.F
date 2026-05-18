@@ -88,7 +88,7 @@ c     %------------%
 c     %-----------------%
 c     | Local variables |
 c     %-----------------%
-      double precision d
+      double precision d, eps_max, eps_aprod_jj, eps_max_anorm
       integer k
 
 c     %--------------------%
@@ -97,31 +97,36 @@ c     %--------------------%
       double precision dlapy2
       external dlapy2
 
+c     j-only terms hoisted out of inner loop (and repeated branches)
+      eps_max = max(eps1_aprod,eps1_atprod)
+      eps_aprod_jj = eps1_aprod*dlapy2(alpha(j), beta(j))
+      eps_max_anorm = eps_max*anorm
+
       if (j.eq.1) then
-         d = eps1_aprod*dlapy2(alpha(j), beta(j)) +
+         d = eps_aprod_jj +
      c        eps1_atprod*alpha(1) +
-     c        max(eps1_aprod,eps1_atprod)*anorm
-         mu(1) = max(eps1_aprod,eps1_atprod)/beta(1)
+     c        eps_max_anorm
+         mu(1) = eps_max/beta(1)
          mumax = abs(mu(1))
       else
          mu(1) = alpha(1)*nu(1)-alpha(j)*mu(1)
-         d = eps1_aprod*dlapy2(alpha(j), beta(j)) +
+         d = eps_aprod_jj +
      c        eps1_atprod*alpha(1) +
-     c        max(eps1_aprod,eps1_atprod)*anorm
+     c        eps_max_anorm
          mu(1) = (mu(1) + dsign(d,mu(1))) / beta(j)
          mumax = abs(mu(1))
          do k=2,j-1
             mu(k) = alpha(k)*nu(k) +beta(k-1)*nu(k-1)-alpha(j)*mu(k)
-            d = eps1_aprod*dlapy2(alpha(j), beta(j)) +
+            d = eps_aprod_jj +
      c           eps1_atprod*dlapy2(alpha(k), beta(k-1)) +
-     c           max(eps1_aprod,eps1_atprod)*anorm
+     c           eps_max_anorm
             mu(k) = (mu(k) + dsign(d,mu(k))) / beta(j)
             mumax = max(mumax,abs(mu(k)))
          enddo
          mu(j) = beta(j-1)*nu(j-1)
-         d = eps1_aprod*dlapy2(alpha(j), beta(j)) +
+         d = eps_aprod_jj +
      c        eps1_atprod*dlapy2(alpha(j), beta(j-1)) +
-     c        max(eps1_aprod,eps1_atprod)*anorm
+     c        eps_max_anorm
          mu(j) = (mu(j) + dsign(d,mu(j))) / beta(j)
          mumax = max(mumax,abs(mu(j)))
       endif
@@ -150,7 +155,7 @@ c     %------------%
 c     %-----------------%
 c     | Local variables |
 c     %-----------------%
-      double precision d
+      double precision d, eps_aprod_jjm1, eps_max_anorm
       integer k
 
 c     %--------------------%
@@ -160,12 +165,14 @@ c     %--------------------%
       external dlapy2
 
       if (j.gt.1) then
+         eps_aprod_jjm1 = eps1_aprod*dlapy2(alpha(j),beta(j-1))
+         eps_max_anorm = max(eps1_aprod,eps1_atprod)*anorm
          numax = zero
          do k=1,j-1
             nu(k) = beta(k)*mu(k+1) + alpha(k)*mu(k) -beta(j-1)*nu(k)
             d = eps1_atprod*dlapy2(alpha(k),beta(k)) +
-     c           eps1_aprod*dlapy2(alpha(j),beta(j-1)) +
-     c           max(eps1_aprod,eps1_atprod)*anorm
+     c           eps_aprod_jjm1 +
+     c           eps_max_anorm
             nu(k) = (nu(k) + dsign(d,nu(k))) / alpha(j)
             numax = max(numax,abs(nu(k)))
          enddo
