@@ -202,7 +202,7 @@ c     %---------------------------------------------%
          nbsvd = nbsvd + 1
          if (lapinfo.ne.0) then
             info = -1000
-            goto 50
+            exit
          endif
 
          if (j.gt.5) then
@@ -217,7 +217,7 @@ c     | reorthogonalization has failed.                 |
 c     %-------------------------------------------------%
          if (j.gt.5 .and. work(ib1).gt.2d0*anorm) then
             info = -2000
-            goto 50
+            exit
          endif
          do i=1,j
             work(ibnd+i-1) = abs(rnorm*work(ibnd+i-1))
@@ -248,13 +248,13 @@ c     %--------------------------------------------------%
             if (j.lt.k) then
                info = j
             endif
-            goto 50
+            exit
          endif
          if (j.ge.lanmax) then
             if (neig.lt.k) then
                info = -neig
             endif
-            goto 50
+            exit
          endif
 
 c     %----------------------------------------------------%
@@ -273,7 +273,7 @@ c     %----------------------------------------------------%
          j = min(j + dj,lanmax)
       enddo
 
- 50   if (lsame(jobu,'y') .or. lsame(jobv,'y')) then
+      if (lsame(jobu,'y') .or. lsame(jobv,'y')) then
 c     %-----------------------------------------%
 c     | Calculate singular vectors if requested %
 c     %-----------------------------------------%
