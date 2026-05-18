@@ -118,8 +118,8 @@ c
 c     %-----------%
 c     | Arguments |
 c     %-----------%
+      use stat_mod
       implicit none
-      include '../common/stat.h'
       character*1 which,jobu,jobv
       integer m,n,p,nwanted,maxiter,ldu,ldv,iter,liwork,lcwrk
       integer iwork(liwork),lswork,info,ioption(*)

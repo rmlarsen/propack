@@ -14,8 +14,8 @@ c
 c     %-----------%
 c     | Arguments |
 c     %-----------%
+      use stat_mod
       implicit none
-      include '../common/stat.h'
       character*1 transa
       integer m, n, j, ntry, ldu, ierr, icgs, iseed(*)
       integer iparm(*)

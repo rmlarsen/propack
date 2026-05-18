@@ -106,8 +106,8 @@ c
 c     %-----------%
 c     | Arguments |
 c     %-----------%
+      use stat_mod
       implicit none
-      include '../common/stat.h'
       integer m, n, k0, k, ldb, ldu, ldv, ierr
       integer ioption(*), iwork(*), iparm(*)
       real rnorm,B(ldb,*), soption(*), swork(*)

@@ -2,8 +2,8 @@ c
 c     (C) Rasmus Munk Larsen, Stanford University, 2000
 c
       subroutine clearstat
+      use stat_mod
       implicit none
-      include '../common/stat.h'
 c     Reset global counters
       nopx = 0
       nreorth = 0
@@ -24,10 +24,10 @@ c     Reset global timers
       end
 
       subroutine getstat(counters, timers)
+      use stat_mod
       implicit none
       integer counters(*)
       real timers(*)
-      include '../common/stat.h'
 c     Return global counter values.
       counters(1) = nopx
       counters(2) = nreorth
@@ -48,8 +48,8 @@ c     Return global timer values.
       end
 
       subroutine printstat
+      use stat_mod
       implicit none
-      include '../common/stat.h'
 
       print *,'+---------------------------------------------------',
      c     '--------+'
