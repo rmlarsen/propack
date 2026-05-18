@@ -45,25 +45,25 @@ c     %-----------------%
       ip = 0
       index(1) = 0
       i = 0
-      do while(i.lt.j)
-c     find the next mu(k), k>i where abs(mu(k)) > delta
+      outer: do while(i.lt.j)
+c        find the next mu(k), k>i where abs(mu(k)) > delta
          do k=i+1,j
-            if (abs(mu(k)).gt.delta) goto 10
+            if (abs(mu(k)).gt.delta) exit
          enddo
-         goto 40
-c     find smallest i<k such that for all j=i,..,k, m(j) >= eta
- 10      do s=k,max(i,1),-1
-            if (abs(mu(s)).lt.eta) goto 20
+         if (k.gt.j) exit outer
+c        find smallest s<=k such that abs(mu(s..k)) >= eta
+         do s=k,max(i,1),-1
+            if (abs(mu(s)).lt.eta) exit
          enddo
- 20      ip = ip+1
+         ip = ip+1
          index(ip) = s+1
          do i=s+1,j
-            if (abs(mu(i)).lt.eta) goto 30
+            if (abs(mu(i)).lt.eta) exit
          enddo
- 30      ip = ip+1
+         ip = ip+1
          index(ip) = i-1
-      enddo
- 40   ip = ip+1
+      enddo outer
+      ip = ip+1
       index(ip) = j+1
       end
 c

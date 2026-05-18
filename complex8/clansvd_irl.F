@@ -236,7 +236,7 @@ c     %---------------------------------------------%
          nbsvd = nbsvd + 1
          if (lapinfo.ne.0) then
             info = -1000
-            goto 50
+            exit
          endif
 
          if (dim.gt.5 .and. lsame(which,'l')) then
@@ -251,7 +251,7 @@ c     | reorthogonalization has failed.                 |
 c     %-------------------------------------------------%
          if (dim.gt.5 .and. swork(ialpha1).gt.2.0*anorm) then
             info = -2000
-            goto 50
+            exit
          endif
          do i=1,dim
             swork(ibnd+i-1) = abs(rnorm*swork(ibnd+i-1))
@@ -295,7 +295,7 @@ c     %-----------------------------------------------%
             if (dim.lt.k) then
                info = dim
             endif
-            goto 50
+            exit
          endif
          if (nconv.lt.nwanted) then
 
@@ -417,7 +417,7 @@ c$OMP END PARALLEL
          iter = iter + 1
       enddo
 
- 50   if (lsame(jobu,'y') .or. lsame(jobv,'y')) then
+      if (lsame(jobu,'y') .or. lsame(jobv,'y')) then
 c     %-----------------------------------------%
 c     | Calculate singular vectors if requested %
 c     %-----------------------------------------%
