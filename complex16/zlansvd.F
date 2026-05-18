@@ -104,8 +104,8 @@ c
 c     %-----------%
 c     | Arguments |
 c     %-----------%
+      use stat_mod
       implicit none
-      include '../common/stat.h'
       character*1 jobu,jobv
       integer info,liwork
       integer m,n,k,kmax,lanmax,ldu,ldv,iwork(liwork),lwork,lzwork

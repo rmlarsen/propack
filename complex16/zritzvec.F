@@ -54,8 +54,8 @@ c
 c     %-----------%
 c     | Arguments |
 c     %-----------%
+      use stat_mod
       implicit none
-      include '../common/stat.h'
       character*1 which, jobu,jobv
       integer m,n,k,dim,ldu,ldv,in_lwrk,iwork(*), lzwrk
       double precision D(*),E(*),work(*)

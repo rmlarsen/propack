@@ -307,9 +307,17 @@ endfunction()
 # ---------------------------------------------------------------------------
 # Common library (shared integer utilities + statistics printing)
 # ---------------------------------------------------------------------------
+# All Fortran .mod files go to a single shared directory so every target can
+# find stat_mod (used by all precision variants and printstat).
+set(CMAKE_Fortran_MODULE_DIRECTORY ${CMAKE_BINARY_DIR}/fortran_modules)
+
 add_library(propack_common
+  common/stat_mod.f90
   common/iblasext.F
   common/printstat.F
+)
+target_include_directories(propack_common PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_Fortran_MODULE_DIRECTORY}>
 )
 target_include_directories(propack_common PRIVATE
   ${CMAKE_CURRENT_SOURCE_DIR}/common

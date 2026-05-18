@@ -51,8 +51,8 @@ c       Prentice-Hall, Englewood Cliffs, NJ, 1980. pp. 105-109
 c     %-----------%
 c     | Arguments |
 c     %-----------%
+      use stat_mod
       implicit none
-      include '../common/stat.h'
       integer n,k,ldv,iflag,index(*)
       complex*16 V(ldv,*),vnew(*),work(*)
       double precision alpha,normvnew
@@ -119,8 +119,8 @@ c     If l=1 and s_1=1 and e_1=k then this becomes classical Gram-Schmidt.
 c     %-----------%
 c     | Arguments |
 c     %-----------%
+      use stat_mod
       implicit none
-      include '../common/stat.h'
       integer n,k,ldv,index(*)
       complex*16 V(ldv,*),vnew(*),work(*)
 c     %-----------------%
@@ -199,8 +199,8 @@ c
 c     Modified Gram-Schmidt orthogonalization.
 c
       subroutine zmgs(n,k,V,ldv,vnew,index)
+      use stat_mod
       implicit none
-      include '../common/stat.h'
       integer n,k,ldv,index(*)
       complex*16 V(ldv,*),vnew(*)
       integer i,j,p,q,iblck
