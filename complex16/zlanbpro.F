@@ -265,13 +265,9 @@ c     %---------------------------------------------------%
          call dset_mu(k0,dwork(imu),iwork(iidx),epsn2)
          call dset_mu(k0,dwork(inu),iwork(iidx),epsn2)
 c     %---------------------------------------------------%
-c     | Zero mu/nu for indices >= k0 and restore diagonal |
-c     | invariant after implicit restart.                 |
+c     | Restore mu(k0)=1 diagonal invariant after restart |
+c     | (mu/nu for j>=k0+1 already zero from pdzero above)|
 c     %---------------------------------------------------%
-         do j=k0+1,k
-            dwork(imu+j-1) = zero
-            dwork(inu+j-1) = zero
-         enddo
          dwork(imu+k0-1) = one
 c     %-----------------------------------------------%
 c     | Initialize running Frobenius norm from B_k0   |
