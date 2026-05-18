@@ -266,13 +266,9 @@ c     %---------------------------------------------------%
          call sset_mu(k0,swork(imu),iwork(iidx),epsn2)
          call sset_mu(k0,swork(inu),iwork(iidx),epsn2)
 c     %---------------------------------------------------%
-c     | Zero mu/nu for indices >= k0 and restore diagonal |
-c     | invariant after implicit restart.                 |
+c     | Restore mu(k0)=1 diagonal invariant after restart |
+c     | (mu/nu for j>=k0+1 already zero from pszero above)|
 c     %---------------------------------------------------%
-         do j=k0+1,k
-            swork(imu+j-1) = zero
-            swork(inu+j-1) = zero
-         enddo
          swork(imu+k0-1) = one
          beta = rnorm
 
