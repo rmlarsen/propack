@@ -20,21 +20,13 @@ c
       do i=1,m-blocksize+1,blocksize
          call zdgemm(transb,blocksize,n,k, A(i,1),lda,
      c        B,ldb,zwork,blocksize)
-         do j=0,n-1
-            do l=0,blocksize-1
-               A(i+l,j+1) = zwork(j*blocksize+1+l)
-            enddo
-         enddo
+         call zlacpy('A',blocksize,n,zwork,blocksize,A(i,1),lda)
       enddo
       blocksize = m-i+1
       if (blocksize.le.0) return
       call zdgemm(transb,blocksize,n,k,A(i,1),lda,
      c     B,ldb,zwork,blocksize)
-      do j=0,n-1
-         do l=0,blocksize-1
-            A(i+l,j+1) = zwork(j*blocksize+1+l)
-         enddo
-      enddo
+      call zlacpy('A',blocksize,n,zwork,blocksize,A(i,1),lda)
       return
       end
 

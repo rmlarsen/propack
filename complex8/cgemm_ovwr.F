@@ -22,21 +22,13 @@ c
       do i=1,m-blocksize+1,blocksize
          call csgemm(transb,blocksize,n,k, A(i,1),lda,
      c        B,ldb,cwork,blocksize)
-         do j=0,n-1
-            do l=0,blocksize-1
-               A(i+l,j+1) = cwork(j*blocksize+1+l)
-            enddo
-         enddo
+         call clacpy('A',blocksize,n,cwork,blocksize,A(i,1),lda)
       enddo
       blocksize = m-i+1
       if (blocksize.le.0) return
       call csgemm(transb,blocksize,n,k,A(i,1),lda,
      c     B,ldb,cwork,blocksize)
-      do j=0,n-1
-         do l=0,blocksize-1
-            A(i+l,j+1) = cwork(j*blocksize+1+l)
-         enddo
-      enddo
+      call clacpy('A',blocksize,n,cwork,blocksize,A(i,1),lda)
       return
       end
 

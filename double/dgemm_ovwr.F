@@ -21,11 +21,7 @@ c
          call dgemm(transa,'N',m,blocksize,k,alpha,A,lda,
      c              B(1,i),ldb,0D0,dwork,m)
          if (beta.eq.0D0) then
-            do j=0,blocksize-1
-               do l=1,m
-                  B(l,i+j)  = dwork(j*m+l)
-               enddo
-            enddo
+            call dlacpy('A',m,blocksize,dwork,m,B(1,i),ldb)
          else
             do j=0,blocksize-1
                do l=1,m
@@ -37,11 +33,7 @@ c
       call dgemm(transa,'N',m,n-i+1,k,alpha,A,lda,
      c           B(1,i),ldb,0D0,dwork,m)
       if (beta.eq.0D0) then
-         do j=0,n-i
-            do l=1,m
-               B(l,i+j)  = dwork(j*m+l)
-            enddo
-         enddo
+         call dlacpy('A',m,n-i+1,dwork,m,B(1,i),ldb)
       else
          do j=0,n-i
             do l=1,m
@@ -70,21 +62,13 @@ c
       do i=1,m-blocksize+1,blocksize
          call dgemm('n',transb,blocksize,n,k,alpha,A(i,1),lda,
      c              B,ldb,0d0,dwork,blocksize)
-         do j=0,n-1
-            do l=0,blocksize-1
-               A(i+l,j+1) = dwork(j*blocksize+1+l)
-            enddo
-         enddo
+         call dlacpy('A',blocksize,n,dwork,blocksize,A(i,1),lda)
       enddo
       blocksize = m-i+1
       if (blocksize.le.0) return
       call dgemm('n',transb,blocksize,n,k,alpha,A(i,1),lda,
      c           B,ldb,0d0,dwork,blocksize)
-      do j=0,n-1
-         do l=0,blocksize-1
-            A(i+l,j+1) = dwork(j*blocksize+1+l)
-         enddo
-      enddo
+      call dlacpy('A',blocksize,n,dwork,blocksize,A(i,1),lda)
       return
       end
 
