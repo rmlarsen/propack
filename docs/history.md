@@ -1,3 +1,8 @@
+---
+title: "PROPACK history and provenance"
+description: "Origin of PROPACK, why the original Stanford homepage is preserved here, and corrections to the original page."
+---
+
 # History and provenance
 
 ## Origin
@@ -52,5 +57,5 @@ version.
 
 The software is released under the BSD 3-Clause license. The original 2005 BSD
 notice is preserved in [`legacy/license.txt`](legacy/license.txt) and in the
-repository [`LICENSE`](../LICENSE). Documentation is under CC BY 4.0; see
+repository [`LICENSE`](https://github.com/rmlarsen/propack/blob/main/LICENSE). Documentation is under CC BY 4.0; see
 [`LICENSE-docs.md`](LICENSE-docs.md).

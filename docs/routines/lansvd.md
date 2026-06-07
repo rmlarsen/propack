@@ -1,3 +1,8 @@
+---
+title: "lansvd — partial SVD (PROPACK)"
+description: "Compute a few singular values and vectors via Lanczos bidiagonalization with partial reorthogonalization."
+---
+
 # `lansvd` — singular values and vectors via Lanczos bidiagonalization
 
 `LANSVD` computes singular triplets `(u, v, sigma)` such that `A*u = sigma*v` and

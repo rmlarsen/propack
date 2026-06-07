@@ -1,3 +1,8 @@
+---
+title: "lanpro — Lanczos tridiagonalization (PROPACK)"
+description: "Lanczos tridiagonalization with partial reorthogonalization, the engine underlying laneig."
+---
+
 # `lanpro` — Lanczos tridiagonalization with partial reorthogonalization
 
 `LANPRO` computes the Lanczos tridiagonalization of a real symmetric matrix using

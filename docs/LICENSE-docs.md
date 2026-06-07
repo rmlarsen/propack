@@ -1,3 +1,8 @@
+---
+title: "PROPACK documentation license"
+description: "Licensing for the PROPACK documentation (CC BY 4.0), with notes on the code (BSD) and the technical report."
+---
+
 # Documentation license
 
 Except where noted below, the documentation in this `docs/` directory — the
@@ -11,7 +16,7 @@ commercially, provided you give appropriate credit.
 ## Exceptions
 
 - The **source code** of PROPACK is licensed separately under the BSD 3-Clause
-  license; see [`../LICENSE`](../LICENSE).
+  license; see [`LICENSE`](https://github.com/rmlarsen/propack/blob/main/LICENSE).
 - The files under [`legacy/`](legacy/index.md) are verbatim historical copies and
   retain their original notices.
 - The **technical report** (`papers/paper.pdf`, `papers/paper.ps.gz`) is

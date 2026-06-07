@@ -1,9 +1,14 @@
+---
+title: "PROPACK Fortran 77 guide (v2.1)"
+description: "Overview and installation for the classic Fortran 77 PROPACK distribution, version 2.1."
+---
+
 # Fortran package guide (classic v2.1)
 
 > This page documents the **classic Fortran 77 distribution (version 2.1, April
 > 2005)** as described on the original homepage. For the **current** build (CMake,
 > the C++17 API, and the four precision libraries) see the top-level
-> [README](../../README.md). The verbatim original is at
+> [README](https://github.com/rmlarsen/propack/blob/main/README.md). The verbatim original is at
 > [`../legacy/README_v2.1.txt`](../legacy/README_v2.1.txt).
 
 ## Overview
@@ -110,4 +115,4 @@ If your system lacks BLAS, the original guide recommended Kazushige Goto's
 high-performance BLAS, or the platform-optimized routines from the ATLAS project
 (Netlib). Reference Fortran BLAS and documentation are at
 [netlib.org/blas](https://www.netlib.org/blas). (The modern build auto-detects
-BLAS/LAPACK and prefers OpenBLAS — see the [README](../../README.md).)
+BLAS/LAPACK and prefers OpenBLAS — see the [README](https://github.com/rmlarsen/propack/blob/main/README.md).)

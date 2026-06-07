@@ -1,3 +1,8 @@
+---
+title: "lanbpro — Lanczos bidiagonalization (PROPACK)"
+description: "Lanczos bidiagonalization with partial reorthogonalization, the engine underlying lansvd."
+---
+
 # `lanbpro` — Lanczos bidiagonalization with partial reorthogonalization
 
 `LANBPRO` computes the Lanczos bidiagonalization of a rectangular matrix using

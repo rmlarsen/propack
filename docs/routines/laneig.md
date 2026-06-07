@@ -1,3 +1,8 @@
+---
+title: "laneig — symmetric eigenproblem (PROPACK)"
+description: "A few eigenvalues and eigenvectors of a real symmetric matrix via Lanczos with partial reorthogonalization."
+---
+
 # `laneig` — eigenvalues and eigenvectors via the symmetric Lanczos algorithm
 
 `LANEIG` solves the eigenvalue problem `A*v = lambda*v` when `A` is real and
