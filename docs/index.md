@@ -1,50 +1,38 @@
-# PROPACK
+---
+title: "PROPACK — SVD via Lanczos bidiagonalization"
+description: "Documentation and historical archive for PROPACK: large and sparse SVD via Lanczos bidiagonalization with partial reorthogonalization, including the 1998 technical report."
+---
 
-**Software for computing the singular value decomposition (SVD) of large and
-sparse or structured matrices**, based on Lanczos bidiagonalization with partial
-reorthogonalization (BPRO).
+# PROPACK — documentation and archive
 
-PROPACK contains a set of routines for computing the SVD of large and sparse or
-structured matrices. The SVD routines are based on the Lanczos bidiagonalization
-algorithm with partial reorthogonalization (BPRO). The Lanczos routines can also
-be used directly, and form the basis of efficient algorithms for solving linear
-systems of equations and linear least squares problems, in particular for
-systems with multiple right-hand sides.
+PROPACK computes the singular value decomposition (SVD) of large and sparse or
+structured matrices, based on Lanczos bidiagonalization with partial
+reorthogonalization (BPRO). The Lanczos routines can also be used directly and
+form the basis of efficient algorithms for linear systems and least squares
+problems, in particular for systems with multiple right-hand sides.
 
-Partial reorthogonalization often improves performance significantly compared to
-the classic Lanczos algorithm with full reorthogonalization; the exact amount of
-improvement depends on the distribution of the singular values.
+> ### This site vs. the repository
+> There are, in effect, two PROPACKs in this project — and this documentation
+> keeps them distinct:
+>
+> - **The modern, actively maintained library** — CMake build, header-only C++17
+>   API, four precision libraries — is documented in the repository
+>   **[README](https://github.com/rmlarsen/propack/blob/main/README.md)**. Start
+>   there if you want to *use* PROPACK today.
+> - **This site is the historical and reference hub.** It preserves the **original
+>   PROPACK** — the Fortran 77 and MATLAB packages and the material from the
+>   long-standing Stanford homepage — alongside reference material that applies to
+>   both versions: the algorithm, the routine documentation, the 1998 technical
+>   report, and the project's history.
 
-> **History.** PROPACK was originally developed by Rasmus Munk Larsen and
-> distributed from `http://sun.stanford.edu/~rmunk/PROPACK/` while he was at
-> Stanford University. This documentation preserves the material from that
-> original homepage and keeps it alongside the modern library in this
-> repository. See [history and provenance](history.md).
+## Original PROPACK — documentation and history
 
-## The modern library
-
-The actively maintained Fortran 77 / C / C++ implementation lives in this
-repository. See the top-level [README](../README.md) for build instructions
-(CMake), the header-only C++17 API, and benchmarks.
-
-Two SVD algorithm variants are provided:
-
-- **`Xlansvd`** — basic Lanczos bidiagonalization (memory grows with the number
-  of iterations, but typically uses fewer matrix-vector products).
-- **`Xlansvd_irl`** — implicitly restarted variant, which computes a given
-  number of singular triplets in a *fixed* amount of memory.
-
-where `X` is `d`, `s`, `z`, or `c` for double, single, complex-double, and
-complex-single precision respectively.
-
-## Documentation
-
-- [Technical report and talks](papers/index.md) — the 1998 report that
-  introduced BPRO, plus two conference presentations, with abstracts.
-- [Algorithm and routine reference](routines/index.md) — the four core
-  routines: `lansvd`, `lanbpro`, `laneig`, `lanpro`.
+- [Technical report and talks](papers/index.md) — the 1998 report that introduced
+  BPRO, plus two conference presentations, with abstracts.
+- [Algorithm and routine reference](routines/index.md) — the four core routines:
+  `lansvd`, `lanbpro`, `laneig`, `lanpro`.
 - [Fortran package guide (v2.1)](guides/fortran-v2.1.md) — overview and
-  installation notes for the classic Fortran 77 distribution.
+  installation for the classic Fortran 77 distribution.
 - [MATLAB toolbox guide](guides/matlab.md) — overview of the original MATLAB
   implementation and its computational routines.
 - [References](references.md) — bibliography.
@@ -52,6 +40,15 @@ complex-single precision respectively.
   was corrected.
 - [Legacy archive](legacy/index.md) — verbatim copies of the files from the
   original Stanford homepage.
+
+## The modern library
+
+The current, maintained implementation — Fortran 77 / C / C++ with a CMake build,
+a header-only C++17 API, benchmarks, and four precisions (`d`, `s`, `z`, `c`) — is
+documented in the repository
+**[README](https://github.com/rmlarsen/propack/blob/main/README.md)**, not on this
+site. Its SVD drivers are `Xlansvd` (basic Lanczos bidiagonalization) and
+`Xlansvd_irl` (implicitly restarted, fixed memory).
 
 ## The algorithm in brief
 
@@ -63,13 +60,13 @@ A V_k = U_k B_k + r_k e_k^T
 
 with `B_k` lower bidiagonal and `U_k`, `V_k` having (semi-)orthonormal columns.
 The singular values of `B_k` approximate those of `A`. Maintaining full
-orthogonality of the Lanczos vectors is expensive; **partial
-reorthogonalization** monitors the loss of orthogonality through simple scalar
-recurrences — without forming inner products — and reorthogonalizes only when
-semi-orthogonality is about to be lost. This is mathematically equivalent to
-Simon's symmetric Lanczos PRO, but works directly on the bidiagonalization of
-`A`, using about half the storage and a factor of 3–4 less work than applying
-PRO to an equivalent symmetric system.
+orthogonality of the Lanczos vectors is expensive; **partial reorthogonalization**
+monitors the loss of orthogonality through simple scalar recurrences — without
+forming inner products — and reorthogonalizes only when semi-orthogonality is
+about to be lost. This is mathematically equivalent to Simon's symmetric Lanczos
+PRO, but works directly on the bidiagonalization of `A`, using about half the
+storage and a factor of 3–4 less work than applying PRO to an equivalent symmetric
+system.
 
 ## Citation
 
@@ -80,16 +77,17 @@ If you use PROPACK, please cite the technical report:
 > PB-537, October 1998.
 > DOI: [10.7146/dpb.v27i537.7070](https://doi.org/10.7146/dpb.v27i537.7070)
 
-A machine-readable [`CITATION.cff`](../CITATION.cff) is provided at the
-repository root.
+A machine-readable
+[`CITATION.cff`](https://github.com/rmlarsen/propack/blob/main/CITATION.cff) is
+provided at the repository root.
 
 ## License
 
-- **Software:** BSD 3-Clause — see [`LICENSE`](../LICENSE).
-- **Documentation** in this `docs/` tree: Creative Commons Attribution 4.0
-  (CC BY 4.0) — see [`LICENSE-docs.md`](LICENSE-docs.md) — except for the
-  verbatim files under [`legacy/`](legacy/index.md), which retain their original
-  notices.
+- **Software:** BSD 3-Clause — see
+  [`LICENSE`](https://github.com/rmlarsen/propack/blob/main/LICENSE).
+- **Documentation** on this site: Creative Commons Attribution 4.0 (CC BY 4.0) —
+  see [`LICENSE-docs.md`](LICENSE-docs.md) — except for the verbatim files under
+  [`legacy/`](legacy/index.md), which retain their original notices.
 
 ## Contact
 

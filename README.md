@@ -242,11 +242,15 @@ target_link_libraries(myapp PRIVATE PROPACK::dpropack)
 
 ## Documentation and history
 
-Extended documentation lives in [`docs/`](docs/index.md): the algorithm and
-routine reference, the 1998 technical report and two conference talks, guides for
-the classic Fortran 77 and MATLAB packages, and a verbatim archive of the
-original Stanford homepage (`http://sun.stanford.edu/~rmunk/PROPACK/`). See
-[`docs/history.md`](docs/history.md) for the project's provenance.
+This README documents the **modern, actively maintained** PROPACK — the CMake
+build, the header-only C++17 API, and the four precision libraries.
+
+The separate [`docs/`](docs/index.md) directory is the project's **historical and
+reference** hub: documentation for the original Fortran 77 (v2.1) and MATLAB
+packages, the 1998 technical report and two conference talks, the routine
+reference, the project's [history and provenance](docs/history.md), and a verbatim
+archive of the original Stanford homepage (`http://sun.stanford.edu/~rmunk/PROPACK/`).
+A rendered version of the `docs/` site is published via GitHub Pages.
 
 ## Contact
 

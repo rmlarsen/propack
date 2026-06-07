@@ -1,3 +1,8 @@
+---
+title: "PROPACK MATLAB toolbox guide"
+description: "Overview of the original MATLAB implementation of PROPACK and its computational routines."
+---
+
 # MATLAB toolbox guide
 
 > This page describes the original **MATLAB** implementation of PROPACK. The

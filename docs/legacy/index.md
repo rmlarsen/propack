@@ -1,3 +1,8 @@
+---
+title: "PROPACK legacy archive"
+description: "Verbatim copies of the files from the original Stanford PROPACK homepage."
+---
+
 # Legacy archive — original Stanford homepage files
 
 This directory contains **verbatim copies** of the files from the original PROPACK

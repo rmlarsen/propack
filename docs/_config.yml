@@ -1,0 +1,23 @@
+# GitHub Pages configuration for the PROPACK documentation site (served from /docs).
+title: PROPACK
+description: >-
+  Documentation and historical archive for PROPACK — large and sparse SVD via
+  Lanczos bidiagonalization with partial reorthogonalization, including the
+  original 1998 technical report.
+theme: jekyll-theme-minimal
+url: https://rmlarsen.github.io
+baseurl: /propack
+show_downloads: false
+plugins:
+  - jekyll-sitemap        # generates /sitemap.xml — submit this in Search Console
+  - jekyll-relative-links # makes the in-repo .md links work on the rendered site
+  - jekyll-seo-tag
+
+# Google Search Console verification:
+#   Simplest, theme-independent method: in Search Console add the property
+#   https://rmlarsen.github.io/propack/ , download its googleXXXX.html token file,
+#   and drop that file into this docs/ folder. It will be served at
+#   https://rmlarsen.github.io/propack/googleXXXX.html and verification will pass.
+#   Alternative (only if the active theme renders jekyll-seo-tag): uncomment and
+#   set the token here instead of using the file.
+# google_site_verification: XXXXXXXXXXXXXXXXXXXXXXXXXXXX

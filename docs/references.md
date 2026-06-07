@@ -1,3 +1,8 @@
+---
+title: "PROPACK references"
+description: "Bibliography for PROPACK and Lanczos bidiagonalization with partial reorthogonalization."
+---
+
 # References
 
 - R. M. Larsen. *Lanczos bidiagonalization with partial reorthogonalization.*

@@ -1,3 +1,8 @@
+---
+title: "PROPACK routine reference"
+description: "Reference for the four core PROPACK routines: lansvd, lanbpro, laneig, lanpro."
+---
+
 # Algorithm and routine reference
 
 PROPACK is built around four core routines. The two Lanczos drivers (`lanbpro`,
@@ -15,7 +20,7 @@ to compute singular triplets and eigenpairs.
 The pages below reproduce the on-line help for the original MATLAB routines. In
 the modern Fortran library the SVD drivers are named `Xlansvd` and `Xlansvd_irl`
 (`X` ∈ {`d`, `s`, `z`, `c`}); see the [Fortran guide](../guides/fortran-v2.1.md)
-and the top-level [README](../../README.md).
+and the top-level [README](https://github.com/rmlarsen/propack/blob/main/README.md).
 
 ## Common reorthogonalization options
 

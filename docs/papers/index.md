@@ -1,3 +1,8 @@
+---
+title: "PROPACK technical report and talks"
+description: "The 1998 technical report (DAIMI PB-537) introducing BPRO, with its abstract, plus two conference talks."
+---
+
 # Technical report and talks
 
 ## Technical report
