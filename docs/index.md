@@ -40,6 +40,9 @@ problems, in particular for systems with multiple right-hand sides.
   was corrected.
 - [Legacy archive](legacy/index.md) — verbatim copies of the files from the
   original Stanford homepage.
+- [Historical release archive](https://github.com/rmlarsen/propack/releases/tag/historical-archive)
+  — the original Fortran 77 and MATLAB release tarballs and test matrices, as a
+  GitHub Release.
 
 ## The modern library
 
