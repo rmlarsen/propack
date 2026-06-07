@@ -1,0 +1,34 @@
+cff-version: 1.2.0
+message: "If you use PROPACK, please cite the technical report below."
+title: "PROPACK: Software for large and sparse SVD calculations"
+abstract: >-
+  PROPACK computes the singular value decomposition of large and sparse or
+  structured matrices using Lanczos bidiagonalization with partial
+  reorthogonalization (BPRO).
+type: software
+authors:
+  - family-names: Larsen
+    given-names: Rasmus Munk
+    email: rmlarsen@gmail.com
+license: BSD-3-Clause
+repository-code: "https://github.com/rmlarsen/propack"
+url: "https://github.com/rmlarsen/propack"
+keywords:
+  - singular value decomposition
+  - SVD
+  - Lanczos bidiagonalization
+  - partial reorthogonalization
+  - sparse matrices
+  - numerical linear algebra
+preferred-citation:
+  type: report
+  title: "Lanczos bidiagonalization with partial reorthogonalization"
+  authors:
+    - family-names: Larsen
+      given-names: Rasmus Munk
+  institution:
+    name: "Department of Computer Science, Århus University"
+  number: "DAIMI PB-537"
+  year: 1998
+  month: 10
+  doi: "10.7146/dpb.v27i537.7070"

@@ -1,0 +1,160 @@
+<HTML>
+<HEAD>  
+<TITLE> PROPACK - Software for large and sparse SVD calculations </TITLE>
+</HEAD>
+<BODY bgcolor="#ffeeaa" text="#000000" >
+
+
+
+<H1> Welcome to the PROPACK homepage </H1>
+
+
+<p> The software package PROPACK contains a set of functions for
+computing the singular value decomposition of large and sparse or
+structured matrices. The SVD routines are based on the Lanczos
+bidiagonalization algorithm with partial reorthogonalization (BPRO).
+The Lanczos routines can also be used directly, and form the basis of
+efficient algorithms for solving linear systems of equations and
+linear least squares problems, in particular for systems with multiple
+right-hand sides.
+
+
+<h3> Software</h3>
+
+
+<ul> 
+
+<li> <b> Fortran version: </b>
+<p>
+A short overview and installation instructions are given <a href="README_v2.1">here</a>.
+  <ul>
+  <li> Version 2.1 (April 20, 2005): <a href="PROPACK77_v2.1.tar.gz">PROPACK77_v2.1.tar.gz</a>. <a href="Changelog_v2.1">Changelog</a>.  
+  <li> Version 2.0 (March 17, 2004): <a href="PROPACK77_v2.02.tar.gz">PROPACK77_v2.0.tar.gz</a>. <a href="Changelog_v2.0">Changelog</a>.  
+  <li> Version 1.2 (Jan 30, 2004): <a href="PROPACK77_v1.2.tar.gz">PROPACK77_v1.2.tar.gz</a>. <a href="Changelog_v1.2">Changelog</a>.  
+  <li> Version 1.1 (June 13, 2003): <a href="PROPACK77_v1.1.tar.gz">PROPACK77_v1.1.tar.gz</a>. <a href="Changelog_v1.1">Changelog</a>.  
+  <li>
+  Version 1.0 (May 1, 2001): <a href="PROPACK77_v1.0.tar.gz">PROPACK77_v1.0.tar.gz</a>.
+  </ul>
+
+<p>
+The Fortran version is currently supported on the following platforms:
+
+<table border=1mm, align=center>
+<tr> <th>  OS </th> <th> architecture </th> <th> compiler </th> <th> OpenMP version </th> </tr>
+<tr> <td> Linux </td> <td> ia32 </td> <td> GNU g77 </td> <td> No </td>  </tr>
+<tr> <td> Linux </td> <td> ia32 </td> <td> Intel ifort </td>  <td> Yes </td>  </tr>
+<tr> <td> Linux </td> <td> x86_64 </td> <td> GNU g77 </td> <td> No </td>  </tr>
+<tr> <td> Linux </td> <td> x86_64 </td> <td> Intel ifort </td>  <td> Yes </td>  </tr>
+<tr> <td> Linux </td> <td> ia64 </td> <td> GNU g77  </td>  <td> No </td>  </tr>
+<tr> <td> Linux </td> <td> ia64 </td> <td> Intel ifort </td>  <td> Yes </td>  </tr>
+<tr> <td> SunOS </td> <td> Sparc </td> <td> Sun WorkShop Compilers f90 </td>  <td> No </td>  </tr>
+<tr> <td> IRIX </td> <td> MIPS </td> <td> MIPSpro f77 </td>  <td> Yes </td>  </tr>
+<tr> <td> AIX </td> <td> Power 4 </td> <td> IBM xlf </td>  <td> Yes </td>  </tr>
+<tr> <td> Mac OS X / Darwin </td> <td> PPC </td> <td> IBM xlf </td>  <td> No </td>  </tr>
+</table>
+</p>
+
+</p>
+
+
+<li> <b> Matlab&reg; version: </b>
+<p>
+  <ul>
+  <li> Version 1.1 (March 2004): <a href="PROPACK_1.1_Matlab.tar.gz">PROPACK_1.1_Matlab.tar.gz</a>
+  <li> Version 1.0 (1998): <a href="PROPACK.tar.gz">PROPACK.tar.gz</a>
+  </ul>
+</p>
+
+<p> An overview of the Matlab toolbox is given <a
+href="Readme">here</a>. The Matlab routines come with detailed on-line
+documentation, which can be read by typing "help <functionname>" at
+the Matlab prompt.  The online documentation for the 4 main routines
+can be reached via the links below:<br> <p>
+
+<ul>
+<li> <b>lanbpro.m</b>: Lanczos bidiagonalization with partial reorthogonalization: <a href="lanbpro.txt">here</a>.
+<li> <b>lansvd.m</b>: Singular value decomposition: <a href="lansvd.txt">here</a>.
+<li> <b>lanpro.m</b>: Hermitian Lanczos with partial reorthogonalization: <a href="lanpro.txt">here</a>.
+<li> <b>laneig.m</b>: Eigenvalues and eigenvectors of a hermitian matrix: <a href="laneig.txt">here</a>.
+</ul> 
+</p>
+
+
+<li> <b> Test matrices from <a href="http://math.nist.gov/MatrixMarket/">MatrixMarket</a>: </b> <a href="TESTMATRICES.tar.gz">TESTMATRICES.tar.gz</a>.
+
+</ul>
+
+<p>
+<h3> Documentation </h3>
+
+
+<ul>
+<li>  R. M. Larsen, <i> Lanczos bidiagonalization
+  with partial reorthogonalization</i>, Department of Computer Science, 
+  Aarhus University, Technical report, DAIMI PB-357, September 1998. 
+  This report describes the initial work that lead to PROPACK.<br>
+Download here in <a  href="paper.ps.gz">gzipped postscript</a> or
+ <a  href="paper.pdf">pdf</a> format.
+
+
+<li>
+  R. M. Larsen, <i>Computing the SVD for Large
+and Sparse Matrices</i>, SCCM, Stanford University, June 16, 2000.
+A presentation of PROPACK given on June 16, 2000 at Lawrence Berkeley
+National Laboratory. <br>
+Download here in <a href="http://sun.stanford.edu/~rmunk/PROPACK/talk.ps.gz">gzipped postscript</a> or 
+<a href="talk.pdf">pdf</a> format.
+
+<li> R. M. Larsen, <i>Combining implicit
+restart and partial reorthogonalization in Lanczos
+bidiagnalization</i>, SCCM, Stanford University, April 2001. A
+presentation of the implicitly restarted SVD algorithm available in
+PROPACK version 1.0. This talk was given on April 18, 2001 at UC
+Berkeley. It includes performance measurements of the Fortran version
+of PROPACK and comparisons with  <a
+href="http://www.nersc.gov/research/SIMON/planso.html">PLANSO</a> and <a href="http://www.caam.rice.edu/software/ARPACK/"> ARPACK</a>. <br>
+Download here in <a href="http://sun.stanford.edu/~rmunk/PROPACK/talk.rev3.ps.gz">gzipped postscript</a> or 
+<a href="talk.rev3.pdf">pdf</a> format.
+</ul>
+</p>
+
+<p>
+<h3> License </h3>
+PROPACK is made available under the BSD license <a
+href="license.txt">here</a>.
+</p>
+
+<b>
+To contact the author, please send e-mail to <a href =
+"mailto:rmlarsen@gmail.com">rmlarsen at gmail dot com</a> 
+<br>
+
+<!-- Place this tag where you want the badge to render. -->
+<div class="g-plus" data-height="69"
+data-href="https://plus.google.com/106095958391274201095"
+data-rel="author"></div>
+
+<!-- Place this tag after the last badge tag. -->
+<script type="text/javascript">
+  (function() {
+      var po = document.createElement('script'); po.type =
+  'text/javascript'; po.async = true;
+      po.src = 'https://apis.google.com/js/plusone.js';
+          var s = document.getElementsByTagName('script')[0];
+      s.parentNode.insertBefore(po, s);
+        })();
+        </script>
+
+</b>
+
+
+
+<hr>
+
+   <i> 
+       Last updated May 16, 2012 by Rasmus Munk Larsen / 
+       <a href = "mailto:rmlarsen@gmail.com">
+                          rmlarsen at gmail dot com </a> 
+    </i>
+  </BODY>
+</HTML>
