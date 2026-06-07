@@ -240,6 +240,14 @@ find_package(PROPACK REQUIRED)
 target_link_libraries(myapp PRIVATE PROPACK::dpropack)
 ```
 
+## Documentation and history
+
+Extended documentation lives in [`docs/`](docs/index.md): the algorithm and
+routine reference, the 1998 technical report and two conference talks, guides for
+the classic Fortran 77 and MATLAB packages, and a verbatim archive of the
+original Stanford homepage (`http://sun.stanford.edu/~rmunk/PROPACK/`). See
+[`docs/history.md`](docs/history.md) for the project's provenance.
+
 ## Contact
 
 Questions and comments about PROPACK are welcome and should be directed to:

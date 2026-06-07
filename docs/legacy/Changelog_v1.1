@@ -1,0 +1,70 @@
+Version 1.1, June 2003: 
+
+Changes since version 1.0:
+
+- Fixed two bugs where dgetu0 and dreorth were being called with the
+  wrong number of parameters. Thanks to Jerzy Czaplicki, Institut de 
+  Pharmacologie et de Biologie Structurale CNRS, Université Paul
+  Sabatier, Toulouse (Jerzy.Czaplicki@ipbs.fr) for reporting this.
+
+- Added experimental support for computing the smallest singular
+  values in the implicitly restarted version of PROPACK. The 
+  subroutine DLANSVD_IRL now takes an additional argument "WHICH", 
+  which can have the values 'L' or 'S'. If WHICH is 'L' then 
+  the NEIG largest singular values are computed.  If WHICH is 'S' 
+  then DLANBSVD_IRL attempts to compute the NEIG smallest singular 
+  values by repeatedly filtering out the largest Ritz values when 
+  restarting (using them as shifts) until convergence.
+  NOTICE: Be aware that for large and ill-conditioned matrices the
+  convergence can be very slow and the algorithm may even fail to
+  converge at all.
+
+- Added support for the Intel compilers under Linux.
+
+- Split options for GCC and the Intel compilers into separate files
+  make.linux_gcc and make.linux_intel.
+
+- The minimum length of the integer workspace IWORK as specified in the
+  interface of DLANSVD and DLANSVD_IRL was incorrect and inconsistent 
+  with the length used in the example programs. Thanks to Tom Schweiger, 
+  Acxiom Corporation (tschwe@acxiom.com) for reporting this.
+
+- Fixed bugs in example programs:
+  o Dimensions of array arguments x and y were reversed in the Harwell-Boeing
+    matrix-vector multiply subroutine atvHB(m, n, x, y) used by the example 
+    program. Thanks to Hannes Schwarzl of Institute of Geophysics and Planetary
+    Physics, UCLA (schwarzl@igpp.ucla.edu), for reporting this.
+  o The COLPTR array in HB.h should be of length NMAX+1, not NMAX.
+
+- Changed the order in which libraries are linked with the example programs
+  to ensure that the platform optimized version of the ILAENV subroutine 
+  provided by a commercial LAPACK implementation is not overwritten by the
+  default values in the file supplied with PROPACK. The divide-and-conquer 
+  code in the DC directory in only meant as a backup for systems that have 
+  an LAPACK library older than version 3.0 installed.
+
+- Made a small modification of the divide-and-conquer SVD code in dbdsdc.f
+  to manually set the SMLSIZ parameter to 25, if run in combination with
+  version 2.0 of ILAENV.
+
+Known Problems:
+
+- We have observed two problems when using the Intel Math Kernel Library(tm)
+  (MKL) and the Intel compiler on the ia32 platform under Linux:
+  1) the performance of the LAPACK routines DBDSQR and DBDSDC from MKL is 
+     severely crippled (presumably) to ensure thread safety.  This is a 
+     problem in MKL, not PROPACK, but we mention it since it can severely 
+     reduce performance. 
+  2) The LAPACK divide-and-conquer source code (DBDSDC) supplied with 
+     PROPACK generates incorrect singular vectors when compiled with the 
+     Intel compiler version 7.0. The version in the Intel Math Kernel 
+     Library (TM) works correctly (albeit very slowly).
+  To get the best performance with the Intel compiler and MKL on the ia32 
+  platform we recommend using only the BLAS routines in MKL in combination 
+  with either the pre-compiled LAPACK 3.0 libraries available from NETLIB
+  or LAPACK 3.0 compiled with GCC from source code.
+
+- DLANSVD_IRL computes incorrect results if WHICH='S' and P>DIM/2. 
+
+
+Version 1.0: Initial version.
