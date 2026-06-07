@@ -24,5 +24,6 @@ reformatted, openly licensed versions see the rest of the
 | [`Changelog_v1.1`](Changelog_v1.1), [`Changelog_v1.2`](Changelog_v1.2), [`Changelog_v2.0`](Changelog_v2.0), [`Changelog_v2.1`](Changelog_v2.1) | Change logs for the Fortran 77 releases. |
 
 The historical release tarballs (Fortran v1.0–v2.1, MATLAB v1.0/v1.1) and the
-`TESTMATRICES` archive are large (~100 MB total) and are published as **GitHub
-Release assets** rather than committed to the repository.
+`TESTMATRICES` archive are large (~100 MB total) and are published as a
+[**GitHub Release** (`historical-archive`)](https://github.com/rmlarsen/propack/releases/tag/historical-archive)
+rather than committed to the repository.
